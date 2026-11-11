@@ -68,24 +68,59 @@ a { color: var(--accent); }
 .mast .wrap { position: relative; z-index: 1; padding-block: 5.5rem 1.1rem; display: grid; gap: .35rem; }
 .mast .eyebrow, .mast .status { color: inherit; }
 
-/* Fotos: a imagem cobre um painel colorido; se ela não carregar, fica o painel. */
-[data-photo]::before {
+/* Fotos em carrossel: faixa com rolagem horizontal e encaixe por foto.
+   Cada foto cobre um painel com trama; se ela não carregar, sai do carrossel. */
+.carousel { position: relative; }
+.slides {
+  display: flex; height: 100%; overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
+}
+.slides::-webkit-scrollbar { display: none; }
+.slides:focus-visible { outline-offset: -3px; }
+.slide { position: relative; flex: 0 0 100%; margin: 0; overflow: hidden; scroll-snap-align: start; scroll-snap-stop: always; }
+.slide::before {
   content: ""; position: absolute; inset: 0;
   background-image: repeating-linear-gradient(135deg, var(--weave) 0 2px, transparent 2px 14px);
 }
-[data-photo] > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.mast.loaded::after, .banner.loaded::after {
-  content: ""; position: absolute; inset: 0;
+.slide > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero .carousel { position: absolute; inset: 0; }
+.hero .slide.loaded::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(to top, var(--scrim), transparent 72%);
 }
-.loaded h1, .loaded h2 { text-shadow: 0 1px 14px var(--chip); }
+.hero.loaded h1, .hero.loaded h2 { text-shadow: 0 1px 14px var(--chip); }
 .credit {
   display: none; position: absolute; top: .55rem; right: .55rem; z-index: 2;
   font: 500 .65rem/1 var(--mono); letter-spacing: .03em; text-decoration: none;
   padding: .32rem .5rem; border-radius: 999px; background: var(--chip); color: var(--photo-ink);
 }
 .loaded > .credit { display: block; }
-.mast > .credit { right: max(.55rem, env(safe-area-inset-right, 0px)); }
+.mast .credit { right: max(.55rem, env(safe-area-inset-right, 0px)); }
+.carousel .nav {
+  position: absolute; top: 50%; z-index: 3; transform: translateY(-50%);
+  display: grid; place-items: center; width: 2.4rem; height: 2.4rem; padding: 0 0 .15rem;
+  border: 0; border-radius: 50%; background: var(--chip); color: var(--photo-ink);
+  font: 400 1.6rem/1 var(--body); cursor: pointer; opacity: .85;
+}
+.carousel .nav:hover { opacity: 1; }
+.carousel .prev { left: .55rem; } .carousel .next { right: .55rem; }
+.carousel .dots {
+  position: absolute; left: 50%; bottom: .4rem; z-index: 3; transform: translateX(-50%);
+  display: flex; gap: .1rem; padding: 0 .3rem; border-radius: 999px; background: var(--chip);
+}
+.carousel .dots button {
+  display: grid; place-items: center; width: 1.3rem; height: 1.3rem; padding: 0;
+  border: 0; background: none; cursor: pointer;
+}
+.carousel .dots button::before {
+  content: ""; width: .45rem; height: .45rem; border-radius: 50%;
+  background: var(--photo-ink); opacity: .5; transition: opacity .2s, transform .2s;
+}
+.carousel .dots button[aria-current="true"]::before { opacity: 1; transform: scale(1.25); }
+.carousel.single .nav, .carousel.single .dots { display: none; }
+/* No banner, as bolinhas sobem para o canto esquerdo e não cobrem o título. */
+.banner .carousel .dots { left: .55rem; top: .55rem; bottom: auto; transform: none; }
+@media (hover: none) { .carousel .nav { display: none; } }
 .eyebrow {
   font: 500 .75rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase;
   color: var(--muted);
@@ -135,7 +170,8 @@ h1 {
   background: var(--day); color: var(--on-day);
 }
 .banner.loaded { color: var(--photo-ink); }
-.banner .txt { position: relative; z-index: 1; min-width: 0; padding: 1rem; display: grid; gap: .4rem; }
+.banner .txt { position: relative; z-index: 1; min-width: 0; padding: 1rem; display: grid; gap: .4rem; pointer-events: none; }
+.mast .wrap { pointer-events: none; }
 .banner .eyebrow { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; color: inherit; }
 .banner .badge { background: transparent; color: inherit; border: 1px solid currentColor; }
 .badge {
@@ -185,13 +221,72 @@ h3 { font: 650 1rem/1.5rem var(--body); text-wrap: balance; }
   padding: .28rem .45rem; border-radius: 999px; border: 1px solid var(--line); color: var(--muted);
 }
 .tag.next { border-color: var(--sun); color: var(--ink); }
-.map { font-size: .85rem; font-weight: 600; text-decoration: none; padding: .15rem 0; }
+.map { font-size: .85rem; font-weight: 600; text-decoration: none; padding: .15rem 0; color: var(--accent); }
 .map:hover { text-decoration: underline; }
+button.map { border: 0; background: none; font-family: inherit; cursor: pointer; display: inline-flex; gap: .35rem; align-items: center; }
+.pin-mini {
+  display: inline-grid; place-items: center; min-width: 1.15rem; height: 1.15rem; padding: 0 .2rem; border-radius: 999px;
+  background: var(--day); color: var(--on-day); font: 700 .68rem/1 var(--display);
+}
 .shot {
-  position: relative; overflow: hidden; aspect-ratio: 16 / 10; max-width: 100%;
+  position: relative; overflow: hidden; max-width: 100%;
   border-radius: 10px; background: var(--line); margin-top: .25rem;
 }
-.shot.failed { display: none; }
+.shot .slides { aspect-ratio: 16 / 10; }
+.shot:has(.carousel.empty) { display: none; }
+.stop { scroll-margin-top: 5.5rem; }
+.stop.flash .body { animation: flash 1.6s ease-out; }
+@keyframes flash { 0%, 30% { background: var(--sun-soft); } 100% { background: transparent; } }
+.stop .body { border-radius: 8px; }
+
+/* Mapa do dia (Leaflet) */
+.daymap-box { margin-bottom: 1.4rem; display: grid; gap: .5rem; }
+.daymap-box summary {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; cursor: pointer;
+  font: 700 .8rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  list-style: none; padding-block: .2rem;
+}
+.daymap-box summary::-webkit-details-marker { display: none; }
+.daymap-box summary span::before { content: "▸ "; display: inline-block; transition: transform .2s; }
+.daymap-box[open] summary span::before { transform: rotate(90deg); }
+.daymap-box summary small { font: inherit; letter-spacing: .04em; text-transform: none; }
+.daymap {
+  position: relative; z-index: 0; isolation: isolate;
+  height: clamp(15rem, 62vw, 22rem); border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--line); background: var(--surface);
+}
+/* Tema escuro: escurece os blocos do mapa mantendo as cores dos marcadores. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .daymap .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.95) contrast(.9); }
+}
+:root[data-theme="dark"] .daymap .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.95) contrast(.9); }
+.map-off { padding: 1rem; color: var(--muted); font-size: .92rem; }
+.pin-wrap { background: none; border: 0; }
+.pin {
+  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--day); color: var(--on-day); border: 2px solid var(--surface);
+  font: 700 .8rem/1 var(--display); box-shadow: 0 1px 4px rgba(0, 0, 0, .35);
+}
+.pin.next { background: var(--sun); color: var(--on-d6); }
+.daymap .leaflet-popup-content-wrapper, .daymap .leaflet-popup-tip { background: var(--surface); color: var(--ink); }
+.daymap .leaflet-popup-content { margin: .7rem .9rem; font: 400 .9rem/1.35 var(--body); }
+.daymap .leaflet-popup-content p { margin: 0; }
+.pop-t { font: 500 .72rem/1.4 var(--mono); letter-spacing: .05em; color: var(--muted); }
+.pop-n { font-weight: 650; margin-block: .15rem .45rem !important; }
+.pop-go { border: 0; padding: 0; background: none; color: var(--accent); font: 600 .85rem/1.4 var(--body); cursor: pointer; }
+.daymap .leaflet-control-attribution { background: var(--surface); color: var(--muted); opacity: .9; }
+.daymap .leaflet-control-attribution a { color: var(--accent); }
+.daymap .leaflet-bar a { background: var(--surface); color: var(--ink); border-color: var(--line); }
+
+/* Botões da seção "App no celular" */
+.actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+.btn {
+  min-height: 2.75rem; padding: .6rem 1rem; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--accent); background: var(--accent); color: var(--bg);
+  font: 600 .92rem/1.2 var(--body);
+}
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .6; cursor: progress; }
 
 .tip {
   margin-top: 1.4rem; padding: .8rem .9rem; border: 1px solid var(--line); border-radius: 8px;
