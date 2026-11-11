@@ -607,3 +607,40 @@ button.map:hover { text-decoration: none; background: color-mix(in srgb, var(--d
   .stats > div { padding: .75rem .65rem; }
   .stats dd { font-size: clamp(.95rem, 4.3vw, 1.15rem); }
 }
+
+/* ===== Trocar de dia: setas laterais (computador) e entrada deslizando ===== */
+.daynav { display: none; }
+@media (hover: hover) and (min-width: 52rem) {
+  .daynav:not([hidden]) {
+    position: fixed; top: 50%; z-index: 15; transform: translateY(-50%);
+    display: flex; align-items: center; gap: .6rem; padding: .55rem; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 999px; color: var(--ink);
+    background: var(--glass); -webkit-backdrop-filter: blur(16px) saturate(1.5); backdrop-filter: blur(16px) saturate(1.5);
+    box-shadow: var(--shadow-lg); transition: transform .3s var(--ease), border-color .3s;
+  }
+  .daynav.prev { left: 1.2rem; } .daynav.next { right: 1.2rem; }
+  .daynav svg {
+    flex: none; width: 2.6rem; height: 2.6rem; padding: .6rem; border-radius: 50%;
+    background: var(--day); stroke: var(--on-day); fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round;
+    transition: transform .3s var(--ease);
+  }
+  .daynav span { display: none; }
+  .daynav:hover { border-color: var(--day); }
+  .daynav.prev:hover svg { transform: translateX(-3px); }
+  .daynav.next:hover svg { transform: translateX(3px); }
+}
+@media (hover: hover) and (min-width: 72rem) {
+  .daynav span {
+    display: grid; max-width: 9rem; text-align: left; line-height: 1.2;
+    font: 650 .88rem/1.25 var(--display); font-stretch: 104%;
+  }
+  .daynav.prev span { padding-right: .5rem; }
+  .daynav.next span { padding-left: .5rem; text-align: right; }
+  .daynav small { font: 500 .62rem/1.5 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+}
+#day.slide-l { animation: dayin-l .45s var(--ease); }
+#day.slide-r { animation: dayin-r .45s var(--ease); }
+@keyframes dayin-l { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
+@keyframes dayin-r { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
+.daynav { transition: opacity .3s, transform .3s var(--ease); }
+.on-cover .daynav { opacity: 0; pointer-events: none; }

@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Chivo:wght@300..800&family=Chivo+Mono:wght@400..600&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous">
-<link rel="stylesheet" href="css/style.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
 <div class="app">
@@ -42,6 +42,10 @@
     <section id="view-roteiro" aria-label="Roteiro">
       <div class="days-band"><nav class="wrap days" id="days" aria-label="Dias da viagem"></nav></div>
       <div class="wrap" id="day"></div>
+      <button type="button" class="daynav prev" id="day-prev" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span></span></button>
+      <button type="button" class="daynav next" id="day-next" hidden>
+        <span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     </section>
     <section id="view-comer" aria-label="Onde comer" hidden><div class="wrap" id="comer-body"></div></section>
     <section id="view-antes" aria-label="Antes de ir" hidden><div class="wrap" id="antes-body"></div></section>
@@ -61,7 +65,7 @@
 </nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>
-<script src="js/data.js?v=3"></script>
-<script src="js/app.js?v=3"></script>
+<script src="js/data.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
 </body>
 </html>

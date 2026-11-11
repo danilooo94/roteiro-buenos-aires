@@ -438,8 +438,14 @@ function show(view) {
 function route(fromUser) {
   const h = location.hash.slice(1);
   if (h === "comer" || h === "antes") { show(h); if (fromUser) window.scrollTo(0, 0); return; }
+  const before = dayIndex(currentDay);
   if (dayIndex(h) >= 0) { currentDay = h; store.set("ba-day", h); }
-  show("roteiro"); renderDays(); renderDay();           // visível antes de desenhar, para o mapa medir o tamanho certo
+  const after = dayIndex(currentDay);
+  show("roteiro"); renderDays(); renderDay(); renderDayNav();   // visível antes de desenhar, para o mapa medir o tamanho certo
+  if (fromUser && after !== before && !reduceMotion.matches) {    // o dia entra deslizando do lado para onde se andou
+    const el = $("day");
+    el.classList.add(after > before ? "slide-l" : "slide-r");
+  }
   if (fromUser) {
     const top = $("view-roteiro").getBoundingClientRect().top + window.scrollY;
     if (window.scrollY > top) window.scrollTo(0, top);
@@ -460,6 +466,58 @@ function start() {
 }
 
 window.addEventListener("hashchange", () => route(true));
+
+/* ===== TROCAR DE DIA: SETAS, TECLADO E DEDO ===== */
+function goDay(delta) {
+  if ($("view-roteiro").hidden) return false;
+  const d = TRIP.days[dayIndex(currentDay) + delta];
+  if (!d) return false;
+  location.hash = d.id;
+  return true;
+}
+function renderDayNav() {
+  const i = dayIndex(currentDay);
+  [["day-prev", TRIP.days[i - 1], "Dia anterior"], ["day-next", TRIP.days[i + 1], "Próximo dia"]].forEach(([id, d, what]) => {
+    const b = $(id);
+    b.hidden = !d;
+    if (!d) return;
+    const k = dayIndex(d.id) + 1;
+    b.className = "daynav " + (id === "day-prev" ? "prev" : "next") + " d" + k;
+    b.setAttribute("aria-label", what + ": " + d.wd + " " + d.date.slice(8) + ", " + d.title);
+    b.title = what + " (" + (id === "day-prev" ? "←" : "→") + ")";
+    b.querySelector("span").innerHTML = "<small>" + esc(d.abbr + " " + d.date.slice(8)) + "</small>" + esc(d.title);
+  });
+}
+// As setas laterais somem enquanto a capa ocupa a tela.
+if ("IntersectionObserver" in window) {
+  new IntersectionObserver(([e]) => document.body.classList.toggle("on-cover", e.intersectionRatio > .35),
+    { threshold: [0, .35, 1] }).observe($("mast"));
+}
+$("day-prev").addEventListener("click", () => goDay(-1));
+$("day-next").addEventListener("click", () => goDay(1));
+
+// Teclado: ← e → trocam de dia, exceto quando o foco está num campo, no carrossel ou no mapa.
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  const t = e.target;
+  if (t.closest && t.closest("input, textarea, select, [contenteditable], .slides, .daymap")) return;
+  if (goDay(e.key === "ArrowRight" ? 1 : -1)) e.preventDefault();
+});
+
+// Dedo: arrastar para os lados no conteúdo do dia (fora do carrossel e do mapa).
+let touch = null;
+$("day").addEventListener("touchstart", (e) => {
+  touch = e.touches.length === 1 && !e.target.closest(".carousel, .daymap, .leaflet-container")
+    ? { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() } : null;
+}, { passive: true });
+$("day").addEventListener("touchend", (e) => {
+  if (!touch) return;
+  const dx = e.changedTouches[0].clientX - touch.x, dy = e.changedTouches[0].clientY - touch.y;
+  const quick = Date.now() - touch.t < 700;
+  touch = null;
+  if (quick && Math.abs(dx) > 70 && Math.abs(dx) > 1.6 * Math.abs(dy)) goDay(dx < 0 ? 1 : -1);
+}, { passive: true });
 $("antes-body").addEventListener("change", (e) => {
   if (e.target.type !== "checkbox") return;
   const done = store.get("ba-check", {});
