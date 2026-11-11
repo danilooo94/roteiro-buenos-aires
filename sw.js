@@ -2,7 +2,7 @@
    - Arquivos do site: tenta a rede primeiro (para pegar edições) e usa a cópia guardada se estiver offline.
    - Fotos, blocos de mapa, fontes e Leaflet: usa a cópia guardada se existir; senão baixa e guarda.
    Ao mudar a lista SHELL_FILES, suba VERSION para renovar a cópia do site. */
-const VERSION = "v8";
+const VERSION = "v9";
 const SHELL = "ba-shell-" + VERSION;
 const PHOTOS = "ba-fotos-v1";          // mesmo nome usado em app.js (botão "Baixar fotos")
 const TILES = "ba-mapas-v1";

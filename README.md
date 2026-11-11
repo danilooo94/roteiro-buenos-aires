@@ -30,7 +30,7 @@ manifest.webmanifest   nome, cores e ícones do app instalado
 icons/                 ícones do app
 ```
 
-Para mudar o roteiro, edite só o `js/data.js`. Cada dia aceita `photos` (lista de chaves de `PHOTOS`, que vira o carrossel do topo), `note` (aviso no topo), `tip` (dica no fim) e `rain` (plano para dia de chuva, aparece como "Se chover"). Fora dos dias, `checklist` e `shopping` são as listas "Para resolver" e "Levar de volta" em "Antes de ir". Cada parada aceita:
+Para mudar o roteiro, edite só o `js/data.js`. Cada dia aceita `photos` (lista de chaves de `PHOTOS`, que vira o carrossel do topo), `note` (aviso no topo), `tip` (dica no fim) e `rain` (plano para dia de chuva, aparece como "Se chover"). Fora dos dias, `checklist` e `shopping` são as listas "Para resolver" e "Levar de volta" em "Antes de ir", e `practical` são os quadros de dicas (dinheiro, emergências, transporte, clima). `currency` é a moeda mostrada nos valores de `price`. Cada parada aceita:
 
 | Campo    | O que é                                         |
 |----------|-------------------------------------------------|
@@ -49,6 +49,14 @@ Para mudar o roteiro, edite só o `js/data.js`. Cada dia aceita `photos` (lista 
 | `hotel`  | `true` nas paradas no hotel; ganham botão para o marcador "H" no mapa |
 
 Para achar as coordenadas de um lugar: no Google Maps, clique com o botão direito no ponto e copie os números que aparecem no topo do menu.
+
+## Conferir antes de publicar
+
+```
+python tools/check.py
+```
+
+Confere se os horários de cada dia estão em ordem e abre o site no Edge (ou Chrome) sem janela para ver se todas as telas aparecem sem erro de JavaScript.
 
 ## App e offline
 

@@ -5,6 +5,7 @@
    ll: [latitude, longitude] da parada, usada no mapa do dia. */
 const TRIP = {
   tz: "America/Argentina/Buenos_Aires",
+  currency: "R$",   // moeda dos valores em "price"
   // O Pleno Madero é o antigo Own Madero: algumas reservas ainda usam o nome antigo.
   hotel: { name: "Pleno Madero", aka: "antigo Own Madero", address: "Azopardo 419, Monserrat",
            ll: [-34.61257, -58.36806], map: "Azopardo 419, Buenos Aires" },
@@ -139,7 +140,7 @@ const TRIP = {
 
     { id: "dia-11", date: "2026-12-11", wd: "Sexta", abbr: "sex", title: "La Boca, San Telmo e jazz em Palermo",
       photos: ["caminito", "caminito2", "bombonera", "lezama"],
-      note: "O Bebop fica hoje em Palermo Soho, não em San Telmo, por isso o táxi das 19:00, que passa no hotel para deixar as compras.",
+      note: "O Bebop fica hoje em Palermo Soho, não em San Telmo, por isso o táxi das 19:00, que passa no hotel para deixar as compras. La Boca e o Parque Lezama têm pouca sombra: protetor solar e água.",
       stops: [
         { t: "10:30", name: "Caminito e arredores", about: "Rua-museu criada em 1959 pelo pintor Benito Quinquela Martín num antigo leito de trem. As casas de chapa eram pintadas com sobras de tinta dos navios, e o nome vem de um tango de Juan de Dios Filiberto.", info: "Ainda vazio a essa hora.", photos: ["caminito", "caminito2"], ll: [-34.63936, -58.36257],
           map: "Caminito, La Boca, Buenos Aires" },
@@ -166,9 +167,13 @@ const TRIP = {
 
     { id: "dia-12", date: "2026-12-12", wd: "Sábado", abbr: "sáb", title: "Saída", photos: ["madero2"],
       stops: [
+        { t: "08:30", name: "Café da manhã na La Puerto Rico", about: "Café de 1887 com torrefação própria e medialunas, a 4 quadras do hotel.",
+          info: "Alsina 416. Confirmar o horário de sábado; se estiver fechado, o café do hotel resolve.", map: "La Puerto Rico, Alsina 416, Buenos Aires" },
+        { t: "09:30", name: "Últimas compras no Dia", info: "Na esquina do hotel (Av. Paseo Colón 470), para completar a lista \u201cLevar de volta\u201d.", minor: true, tags: ["opcional"],
+          map: "Supermercado Dia, Av. Paseo Colón 470, Buenos Aires" },
         { t: "10:00", name: "Saída do hotel para Ezeiza", info: "Para chegar com 3h de antecedência.", minor: true,
           map: "Aeropuerto Internacional Ezeiza" },
-        { t: "14:00", name: "Voo internacional", info: "Aeroporto de Ezeiza (EZE).", ll: [-34.81054, -58.54311],
+        { t: "14:00", name: "Voo internacional", info: "Aeroporto de Ezeiza (EZE). Depois da imigração há free shop e Havanna para alguma compra de última hora.", ll: [-34.81054, -58.54311],
           map: "Aeropuerto Internacional Ezeiza" }
       ] }
   ],
@@ -203,7 +208,38 @@ const TRIP = {
       { name: "Uptown Bar", what: "Palermo. Bar temático de metrô.", day: "dia-09", when: "qua 00:30" },
       { name: "La Ventana", what: "San Telmo. Show de tango.", day: "dia-10", when: "qui 21:30" },
       { name: "Pulpería Quilapán", what: "San Telmo.", day: "dia-11", when: "sex 17:30" },
-      { name: "Bebop Club", what: "Palermo Soho. Jazz.", day: "dia-11", when: "sex 20:00" } ] }
+      { name: "Bebop Club", what: "Palermo Soho. Jazz.", day: "dia-11", when: "sex 20:00" } ] },
+    { cat: "Compras para levar", items: [
+      { name: "Carrefour Express", what: "Balcarce 395, a 3 quadras do hotel. Domingo das 11h às 20h.", map: "Carrefour Express, Balcarce 395", day: "dia-06", when: "dom 17:30" },
+      { name: "Dia", what: "Av. Paseo Colón 470, na esquina do hotel.", map: "Supermercado Dia, Av. Paseo Colón 470", day: "dia-07", when: "seg 17:40" },
+      { name: "Coto", what: "Perú 1496, San Telmo. O maior, com mais vinhos.", map: "Coto, Perú 1496", day: "dia-11", when: "sex 18:30" } ] }
+  ],
+
+  // Dicas práticas de "Antes de ir". Cada item é um texto, ou { text, tel } / { text, link: [rótulo, url] }.
+  practical: [
+    { title: "Dinheiro", items: [
+      "Na maquininha, escolha sempre cobrar em pesos. A conversão para reais oferecida na hora costuma sair mais cara.",
+      "Cartão de conta global, com câmbio comercial, costuma sair melhor que o cartão de crédito tradicional, que soma IOF de 3,5% e o spread do banco.",
+      "Para ter pesos em dinheiro, a saída mais usada é a Western Union: envia por Pix no app e retira numa agência em Buenos Aires. Evite comprar pesos no Brasil ou no aeroporto.",
+      "O Pix não funciona direto nas lojas argentinas.",
+      "Gorjeta: nos restaurantes é costume deixar cerca de 10%, que não vem na conta. Vale ter pesos em dinheiro para isso, para as feiras e para táxis.",
+      "Pagando a hospedagem com cartão estrangeiro, o hotel pode não cobrar o IVA de 21%. Confirmar no check-in." ] },
+    { title: "Emergências", items: [
+      { text: "Emergência geral (polícia, bombeiros, ambulância): 911", tel: "911" },
+      { text: "Ambulância na cidade (SAME): 107", tel: "107" },
+      { text: "Polícia Turística, 24h: Av. Corrientes 436. WhatsApp +54 9 11 5050-9260", link: ["WhatsApp", "https://wa.me/5491150509260"] },
+      { text: "Plantão do Consulado do Brasil (ligação ou WhatsApp), só para casos graves como acidente, roubo com violência ou prisão: +54 9 11 4199-9668", tel: "+5491141999668" },
+      "Consulado-Geral do Brasil: Carlos Pellegrini 1363, 5º andar, com hora marcada pelo e-consular.",
+      "Pronto-socorro público 24h mais perto do hotel: Hospital Argerich, Pi y Margall 750, em La Boca (~2 km). Para atendimento particular, ligar antes para o seguro viagem." ] },
+    { title: "Transporte", items: [
+      "O trem para Tigre (linha Mitre, saindo de Retiro) usa o cartão SUBE. O pagamento por aproximação está sendo liberado aos poucos nos trens: levem a SUBE carregada por garantia.",
+      "A SUBE é vendida em bancas, quiosques e estações do metrô, e é carregada nas bilheterias e terminais. Um cartão serve para os dois: é só passar duas vezes.",
+      "Metrô e ônibus da cidade já aceitam cartão Visa ou Mastercard por aproximação, ou o celular.",
+      { text: "Conferir antes de ir quais linhas aceitam cartão", link: ["SUBE", "https://www.argentina.gob.ar/sube/apertura-de-sube-nuevos-medios-de-pago"] } ] },
+    { title: "Clima", items: [
+      "Dezembro é verão: as máximas costumam passar de 28 °C, com sol forte à tarde.",
+      "Protetor solar, chapéu e garrafa de água, sobretudo na quarta (Palermo, uns 8 km a pé) e na sexta (La Boca e Parque Lezama).",
+      "Para os dias de chuva, cada dia do roteiro tem um quadro \u201cSe chover\u201d no fim." ] }
   ],
 
   // Lista de compras para trazer de volta (aparece em "Antes de ir", com as marcações salvas no aparelho).

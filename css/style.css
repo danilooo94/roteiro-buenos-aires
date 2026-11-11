@@ -563,6 +563,9 @@ button.map:hover { text-decoration: none; background: color-mix(in srgb, var(--d
 .btn:hover { transform: translateY(-1px); }
 .btn.ghost { background: transparent; color: var(--accent); box-shadow: none; }
 .btn:disabled { opacity: .6; cursor: progress; transform: none; }
+.facts > li { padding-block: .6rem; border-top: 1px solid var(--line); font-size: .93rem; }
+.facts > li:first-child { border-top: 0; }
+.facts .act { white-space: nowrap; font: 600 .78rem/1 var(--mono); color: var(--accent); margin-left: .3rem; }
 .credits { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: .3rem 1rem; font-size: .84rem; }
 .credits a { color: var(--muted); text-decoration: none; display: block; padding-block: .2rem; }
 .credits a:hover { color: var(--accent); }

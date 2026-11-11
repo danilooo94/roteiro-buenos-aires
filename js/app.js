@@ -3,7 +3,7 @@
 /* ===== UTILIDADES ===== */
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const money = (n) => n.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+const money = (n) => (TRIP.currency ? TRIP.currency + " " : "") + n.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 const mapUrl = (q) => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
 const commonsName = (f) => encodeURIComponent(f.replace(/ /g, "_"));
 // Um tamanho só por foto: o mesmo endereço é usado na página e no download para offline.
@@ -344,7 +344,7 @@ function renderComer() {
         return '<li><div class="who"><strong>' + esc(p.name) + "</strong><span>" + esc(p.what) + "</span></div>" +
           '<div class="row-meta">' +
           (di >= 0 ? '<a class="when d' + (di + 1) + '" href="#' + p.day + '">' + esc(p.when) + "</a>" : '<span class="tag">' + esc(p.tag) + "</span>") +
-          '<a class="map" href="' + mapUrl(p.name + ", Buenos Aires") + '" target="_blank" rel="noopener">Mapa ↗</a></div></li>';
+          '<a class="map" href="' + mapUrl((p.map || p.name) + ", Buenos Aires") + '" target="_blank" rel="noopener">Mapa ↗</a></div></li>';
       }).join("") + "</ul></section>").join("") +
     '<section class="panel reveal" id="cat-near"><div class="panel-h"><h3>Perto dos passeios</h3><span class="count">' + near.length +
     '</span></div><ul class="rows">' + near.map((o) =>
@@ -397,8 +397,15 @@ function renderAntes() {
     checkPanel("check", "Para resolver", TRIP.checklist, done) +
     checkPanel("shop", "Levar de volta", TRIP.shopping, done,
       "Para comprar nos supermercados de domingo, segunda e sexta. As marcações ficam salvas só neste aparelho.") +
+    (TRIP.practical || []).map((g) =>
+      '<section class="panel reveal"><div class="panel-h"><h3>' + esc(g.title) + '</h3></div><ul class="facts">' + g.items.map((x) => {
+        const it = typeof x === "string" ? { text: x } : x;
+        return "<li>" + esc(it.text) +
+          (it.tel ? ' <a class="act" href="tel:' + esc(it.tel) + '">Ligar</a>' : "") +
+          (it.link ? ' <a class="act" href="' + esc(it.link[1]) + '" target="_blank" rel="noopener">' + esc(it.link[0]) + " ↗</a>" : "") + "</li>";
+      }).join("") + "</ul></section>").join("") +
     '<section class="panel reveal"><div class="panel-h"><h3>Custos anotados</h3><span class="count">' + costs.length + " itens</span></div>" +
-    '<div class="total"><strong>' + money(total) + '</strong><span class="fine">soma, sem conversão de moeda</span></div>' +
+    '<div class="total"><strong>' + money(total) + '</strong><span class="fine">soma dos valores anotados</span></div>' +
     '<div class="costs-scroll"><table class="costs">' +
     "<thead><tr><th>Dia</th><th>Item</th><th>Valor</th></tr></thead><tbody>" + costs.map((c) =>
       '<tr><td><span class="daydot d' + (dayIndex(c.d.id) + 1) + '"></span>' + esc(c.d.abbr + " " + c.d.date.slice(8)) + "</td><td>" + esc(c.s.name) + "</td><td>" + money(c.s.price) + "</td></tr>").join("") +
