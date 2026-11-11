@@ -21,14 +21,24 @@
 <body>
 <div class="app">
   <header class="mast hero" id="mast">
-    <div class="wrap">
-      <p class="eyebrow">06 → 12 dez 2026 · 7 dias · Hotel Pleno Madero</p>
-      <h1>Buenos Aires</h1>
+    <div class="wrap mast-txt">
+      <p class="eyebrow">
+        <svg class="sol" viewBox="0 0 24 24" aria-hidden="true"><circle class="rays" cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5"/></svg>
+        06 → 12 dez 2026 · 7 dias
+      </p>
+      <h1><span>Buenos</span> <span class="outline">Aires</span></h1>
+      <div class="board-row">
+        <div class="board" id="board" aria-hidden="true"></div>
+        <p class="board-label" id="board-label"></p>
+      </div>
       <p class="status" id="status">Roteiro dia a dia</p>
     </div>
+    <button type="button" class="cue" id="cue" aria-label="Ir para o roteiro">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
   </header>
 
-  <main>
+  <main id="main">
     <section id="view-roteiro" aria-label="Roteiro">
       <div class="days-band"><nav class="wrap days" id="days" aria-label="Dias da viagem"></nav></div>
       <div class="wrap" id="day"></div>
@@ -39,11 +49,15 @@
 </div>
 
 <nav class="tabs" aria-label="Seções">
-  <div class="wrap">
-    <a href="#dia-06" id="tab-roteiro">Roteiro</a>
-    <a href="#comer" id="tab-comer">Comer</a>
-    <a href="#antes" id="tab-antes">Antes de ir</a>
-  </div>
+  <a href="#dia-06" id="tab-roteiro">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v16"/><circle cx="5" cy="6" r="2.2"/><circle cx="5" cy="18" r="2.2"/><path d="M10 6h9M10 12h6M10 18h9"/><circle cx="5" cy="12" r="2.2"/></svg>
+    <span>Roteiro</span></a>
+  <a href="#comer" id="tab-comer">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8a2 2 0 0 0 2 2v8M5 3v5a2 2 0 0 0 4 0V3"/><path d="M17 21V3c-2.5 1.5-4 4-4 8h4"/></svg>
+    <span>Comer</span></a>
+  <a href="#antes" id="tab-antes">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="17" rx="3"/><path d="M9 3v3M15 3v3M8.5 13l2.5 2.5 4.5-5"/></svg>
+    <span>Antes de ir</span></a>
 </nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>

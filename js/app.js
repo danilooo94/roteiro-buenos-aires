@@ -88,6 +88,29 @@ document.addEventListener("click", (e) => {
 });
 window.addEventListener("resize", () => document.querySelectorAll("[data-carousel]").forEach(syncDots));
 
+// Capa: as fotos trocam sozinhas; param quando a pessoa mexe, quando a aba fica oculta ou com "reduzir movimento".
+function autoplay(car, ms) {
+  let pausedUntil = 0;
+  const pause = () => { pausedUntil = Date.now() + 20000; };
+  ["pointerdown", "wheel", "keydown", "focusin"].forEach((ev) => car.addEventListener(ev, pause, { passive: true }));
+  setInterval(() => {
+    if (reduceMotion.matches || document.hidden || Date.now() < pausedUntil || slidesOf(car).length < 2) return;
+    if (car.getBoundingClientRect().bottom < 0) return;   // capa fora da tela
+    goSlide(car, currentSlide(car) + 1);
+  }, ms);
+}
+
+/* ===== ENTRADA SUAVE AO ROLAR ===== */
+const revealer = ("IntersectionObserver" in window && !reduceMotion.matches)
+  ? new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add("in"); revealer.unobserve(e.target); }
+    }), { rootMargin: "0px 0px -6% 0px" })
+  : null;
+if (revealer) document.documentElement.classList.add("anim");
+function observeReveal(root) {
+  root.querySelectorAll(".reveal:not(.in)").forEach((el) => { if (revealer) revealer.observe(el); else el.classList.add("in"); });
+}
+
 /* ===== HOJE, NO FUSO DE BUENOS AIRES ===== */
 function nowBA() {
   const parts = new Intl.DateTimeFormat("en-CA", { timeZone: TRIP.tz, year: "numeric", month: "2-digit", day: "2-digit",
@@ -120,10 +143,10 @@ function mappedStops(d) {
 function mapHtml(d) {
   const pts = mappedStops(d);
   if (!pts.length) return "";
-  return '<details class="daymap-box" id="daymap-box"' + (store.get("ba-map-open", true) ? " open" : "") + ">" +
+  return '<details class="daymap-box reveal" id="daymap-box"' + (store.get("ba-map-open", true) ? " open" : "") + ">" +
     "<summary><span>Mapa do dia</span><small>" + pts.length + (pts.length === 1 ? " parada" : " paradas") + "</small></summary>" +
     '<div class="daymap" id="daymap" role="region" aria-label="Mapa das paradas do dia"></div>' +
-    '<p class="fine">Linhas retas ligam as paradas na ordem do dia; não são o trajeto real. Os trechos de mapa já vistos ficam guardados para usar sem internet.</p>' +
+    '<p class="fine">Linhas retas ligam as paradas na ordem do dia, não o trajeto real. Os trechos já vistos ficam guardados para usar sem internet.</p>' +
     "</details>";
 }
 
@@ -150,8 +173,8 @@ function buildMap(d, nextStop) {
   if (pts.length > 1) L.polyline(pts.map((x) => x.s.ll), { color, weight: 3, opacity: .85, dashArray: "2 7", lineCap: "round" }).addTo(dayMap);
   pts.forEach((x, k) => {
     const isNext = x.s === nextStop;
-    const icon = L.divIcon({ className: "pin-wrap", html: '<span class="pin' + (isNext ? " next" : "") + '">' + (k + 1) + "</span>",
-      iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -12] });
+    const icon = L.divIcon({ className: "pin-wrap", html: '<span class="pin' + (isNext ? " next" : "") + '"><b>' + (k + 1) + "</b></span>",
+      iconSize: [28, 28], iconAnchor: [14, 34], popupAnchor: [0, -32] });
     const m = L.marker(x.s.ll, { icon, title: x.s.t + " " + x.s.name, keyboard: true, zIndexOffset: isNext ? 1000 : 0 }).addTo(dayMap);
     m.bindPopup('<p class="pop-t">' + (k + 1) + " · " + x.s.t + '</p><p class="pop-n">' + esc(x.s.name) + "</p>" +
       '<button type="button" class="pop-go" data-goto="' + stopId(d, x.i) + '">Ver no roteiro ↓</button>');
@@ -189,6 +212,23 @@ function renderStatus() {
     text = "Viagem concluída";
   }
   $("status").textContent = text;
+  // Letreiro de plataforma: dias que faltam, horário da próxima parada ou "fim".
+  let chars, label;
+  if (state.phase === "before") {
+    chars = state.daysLeft <= 0 ? ["HOJE"] : String(state.daysLeft).padStart(2, "0").split("");
+    label = state.daysLeft <= 0 ? "pouso às 12:40 no Aeroparque" : (state.daysLeft === 1 ? "dia" : "dias") + " para o embarque";
+  } else if (state.phase === "during") {
+    chars = state.next ? state.next.t.split("") : ["FIM"];
+    label = state.next ? "próxima parada" : "dia encerrado";
+  } else {
+    chars = ["FIM"]; label = "até a próxima, Buenos Aires";
+  }
+  const key = chars.join("") + label;
+  if ($("board").dataset.key !== key) {
+    $("board").dataset.key = key;
+    $("board").innerHTML = chars.map((c, i) => '<span class="flap' + (c.length > 1 ? " wide" : "") + '" style="--i:' + i + '">' + esc(c) + "</span>").join("");
+    $("board-label").textContent = label;
+  }
 }
 
 function renderDays() {
@@ -196,7 +236,7 @@ function renderDays() {
     const today = state.phase === "during" && state.day.id === d.id;
     return '<a class="chip d' + (i + 1) + (today ? " today" : "") + '" href="#' + d.id + '" aria-current="' + (d.id === currentDay) + '"' +
       ' aria-label="' + esc(d.wd + " " + d.date.slice(8)) + '">' +
-      '<span class="wd">' + esc(d.abbr) + '</span><span class="num">' + d.date.slice(8) + "</span></a>";
+      '<span class="num">' + d.date.slice(8) + '</span><span class="wd">' + esc(d.abbr) + "</span></a>";
   }).join("");
 }
 
@@ -208,14 +248,31 @@ function stopHtml(d, s, i, isNext, pin) {
   if (pin) meta.push('<button type="button" class="map map-jump" data-stop="' + i + '">No mapa <span class="pin-mini">' + pin + "</span></button>");
   if (s.map) meta.push('<a class="map" href="' + mapUrl(s.map) + '" target="_blank" rel="noopener">Google Maps ↗</a>');
   const shot = carouselHtml(s.photos, "Fotos: " + s.name);
+  const inner = (shot ? '<div class="shot">' + shot + "</div>" : "") +
+    "<h3>" + esc(s.name) + "</h3>" +
+    (s.info ? "<p>" + esc(s.info) + "</p>" : "") +
+    (s.list ? '<ul class="sub">' + s.list.map((x) => "<li><b>" + esc(x[0]) + "</b>" + esc(x[1]) + "</li>").join("") + "</ul>" : "") +
+    (meta.length ? '<div class="meta">' + meta.join("") + "</div>" : "");
   return '<li class="stop' + (s.minor ? " minor" : "") + (isNext ? " next" : "") + '" id="' + stopId(d, i) + '">' +
     '<time class="t">' + s.t + '</time><span class="rail" aria-hidden="true"><span class="dot"></span></span>' +
-    '<div class="body"><h3>' + esc(s.name) + "</h3>" +
-    (s.info ? "<p>" + esc(s.info) + "</p>" : "") +
-    (s.list ? '<ul class="sub">' + s.list.map((x) => "<li><b>" + esc(x[0]) + "</b> · " + esc(x[1]) + "</li>").join("") + "</ul>" : "") +
-    (shot ? '<div class="shot">' + shot + "</div>" : "") +
-    (meta.length ? '<div class="meta">' + meta.join("") + "</div>" : "") +
-    "</div></li>";
+    '<div class="body">' + (s.minor ? inner : '<div class="card reveal">' + inner + "</div>") + "</div></li>";
+}
+
+function dayStats(d) {
+  const main = d.stops.filter((s) => !s.minor).length;
+  const cost = d.stops.reduce((a, s) => a + (s.price || 0), 0);
+  const first = d.stops[0].t, last = d.stops[d.stops.length - 1].t;
+  return '<dl class="stats reveal">' +
+    "<div><dt>Paradas</dt><dd>" + main + "</dd></div>" +
+    "<div><dt>Horário</dt><dd>" + (first === last ? first : first + "<small>–</small>" + last) + "</dd></div>" +
+    "<div><dt>Custos</dt><dd>" + (cost ? money(cost).replace(/,00$/, "") : "—") + "</dd></div></dl>";
+}
+
+function pagerLink(d, cls, dir) {
+  const k = dayIndex(d.id) + 1;
+  const badge = '<span class="mini-badge d' + k + '">' + d.date.slice(8) + "</span>";
+  const lbl = '<span class="lbl"><small>' + (dir < 0 ? "← dia anterior" : "próximo dia →") + "</small>" + esc(d.title) + "</span>";
+  return '<a class="' + cls + " d" + k + '" href="#' + d.id + '">' + (dir < 0 ? badge + lbl : lbl + badge) + "</a>";
 }
 
 function renderDay() {
@@ -229,17 +286,19 @@ function renderDay() {
   $("day").className = "wrap d" + (i + 1);
   $("day").innerHTML =
     '<header class="day-head"><div class="banner hero">' + carouselHtml(d.photos, "Fotos do dia: " + d.title) +
-    '<div class="txt"><p class="eyebrow">' + esc(d.wd) + " · " + d.date.slice(8) + "/12" +
+    '<div class="txt"><span class="line-badge" aria-hidden="true">' + d.date.slice(8) + "</span>" +
+    '<p class="eyebrow">' + esc(d.wd) + " · " + d.date.slice(8) + " de dezembro" +
     (d.badge ? ' <span class="badge">' + esc(d.badge) + "</span>" : "") + "</p>" +
-    "<h2>" + esc(d.title) + "</h2></div></div>" + (d.note ? '<p class="note">' + esc(d.note) + "</p>" : "") + "</header>" +
+    "<h2>" + esc(d.title) + "</h2></div></div>" + dayStats(d) +
+    (d.note ? '<p class="note reveal">' + esc(d.note) + "</p>" : "") + "</header>" +
     mapHtml(d) +
     '<ol class="stops">' + d.stops.map((s, k) => stopHtml(d, s, k, s === nextStop, pins[k])).join("") + "</ol>" +
-    (d.tip ? '<p class="tip">' + esc(d.tip) + "</p>" : "") +
+    (d.tip ? '<p class="tip reveal"><b>Dica</b>' + esc(d.tip) + "</p>" : "") +
     '<nav class="pager" aria-label="Outros dias">' +
-    (prev ? '<a href="#' + prev.id + '">← ' + esc(prev.wd) + " <span>" + prev.date.slice(8) + "/12</span></a>" : "<span></span>") +
-    (next ? '<a href="#' + next.id + '">' + esc(next.wd) + " <span>" + next.date.slice(8) + "/12</span> →</a>" : "<span></span>") +
+    (prev ? pagerLink(prev, "pv", -1) : "") + (next ? pagerLink(next, "nx", 1) : "") +
     "</nav>";
   wireCarousels($("day"));
+  observeReveal($("day"));
   const box = $("daymap-box");
   if (box) {
     if (box.open) buildMap(d, nextStop);
@@ -258,15 +317,20 @@ function renderComer() {
   $("comer-body").innerHTML =
     '<header class="view-head"><p class="eyebrow">Por categoria</p><h2>Onde comer e beber</h2>' +
     '<p class="note">Três parrillas de peso em cinco noites: vale preencher as refeições em aberto com outra coisa.</p></header>' +
-    TRIP.places.map((c) =>
-      '<section class="block"><h3>' + esc(c.cat) + '</h3><ul class="rows">' + c.items.map((p) => {
+    '<nav class="cats" aria-label="Categorias">' + TRIP.places.map((c, k) =>
+      '<button type="button" data-cat="cat-' + k + '">' + esc(c.cat) + "</button>").join("") +
+    '<button type="button" data-cat="cat-open">Em aberto</button></nav>' +
+    TRIP.places.map((c, k) =>
+      '<section class="panel reveal" id="cat-' + k + '"><div class="panel-h"><h3>' + esc(c.cat) + '</h3><span class="count">' + c.items.length +
+      '</span></div><ul class="rows">' + c.items.map((p) => {
         const di = p.day ? dayIndex(p.day) : -1;
         return '<li><div class="who"><strong>' + esc(p.name) + "</strong><span>" + esc(p.what) + "</span></div>" +
           '<div class="row-meta">' +
           (di >= 0 ? '<a class="when d' + (di + 1) + '" href="#' + p.day + '">' + esc(p.when) + "</a>" : '<span class="tag">' + esc(p.tag) + "</span>") +
           '<a class="map" href="' + mapUrl(p.name + ", Buenos Aires") + '" target="_blank" rel="noopener">Mapa ↗</a></div></li>';
       }).join("") + "</ul></section>").join("") +
-    '<section class="block"><h3>Ainda em aberto</h3><ul class="rows">' + open.map((o) =>
+    '<section class="panel open reveal" id="cat-open"><div class="panel-h"><h3>Ainda em aberto</h3><span class="count">' + open.length +
+    '</span></div><ul class="rows">' + open.map((o) =>
       '<li><div class="who"><strong>' + esc(o.s.name) + "</strong><span>" + esc(o.s.info || "Sem lugar definido.") + "</span></div>" +
       '<div class="row-meta"><a class="when d' + (o.i + 1) + '" href="#' + o.d.id + '">' + esc(o.d.abbr + " " + o.s.t) + "</a></div></li>").join("") +
     "</ul></section>";
@@ -277,14 +341,17 @@ function renderAntes() {
   const costs = [];
   TRIP.days.forEach((d) => d.stops.forEach((s) => { if (s.price) costs.push({ d, s }); }));
   const total = costs.reduce((a, c) => a + c.s.price, 0);
+  const nDone = TRIP.checklist.filter((c) => done[c.id]).length;
   $("antes-body").innerHTML =
     '<header class="view-head"><p class="eyebrow">Preparação</p><h2>Antes de ir</h2>' +
     '<p class="note">Segunda 07/12 é dia não laborável e terça 08/12 é feriado: a cidade estará cheia de domingo a terça, então vale deixar tudo reservado.</p></header>' +
-    '<section class="block"><h3>Voos e hotel</h3><dl class="facts">' +
-    "<dt>Chegada</dt><dd>Dom 06/12, 12:40, Aeroparque (AEP)</dd>" +
-    "<dt>Hotel</dt><dd>Pleno Madero. Check-in às 15h</dd>" +
-    "<dt>Saída</dt><dd>Sáb 12/12, 14:00, Ezeiza (EZE). Sair do hotel às 10h</dd></dl></section>" +
-    '<section class="block" id="app-block"><h3>App no celular</h3>' +
+    '<section class="pass reveal" aria-label="Voos e hotel"><div class="pass-top">' +
+    '<div class="leg"><span class="lbl">Chegada</span><span class="code">AEP</span><span class="tm">dom 06/12 · 12:40</span></div>' +
+    '<div class="flight" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></div>' +
+    '<div class="leg r"><span class="lbl">Volta</span><span class="code">EZE</span><span class="tm">sáb 12/12 · 14:00</span></div></div>' +
+    '<div class="pass-foot"><div><span>Hotel</span><b>Pleno Madero</b></div><div><span>Check-in</span><b>15h</b></div>' +
+    "<div><span>Último dia</span><b>Sair às 10h</b></div></div></section>" +
+    '<section class="panel reveal" id="app-block"><div class="panel-h"><h3>App no celular</h3></div>' +
     '<p class="note" id="app-state">Instale o roteiro na tela inicial para abrir como app, mesmo sem internet.</p>' +
     '<div class="actions">' +
     '<button type="button" class="btn" id="install" hidden>Instalar app</button>' +
@@ -292,20 +359,22 @@ function renderAntes() {
     '<p class="fine" id="ios-hint" hidden>No iPhone: abra no Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”.</p>' +
     '<p class="fine" id="offline-state" aria-live="polite">O roteiro já fica guardado depois da primeira visita. As fotos e os mapas ficam guardados conforme você os abre; o botão acima baixa todas as fotos de uma vez (cerca de ' +
     Object.keys(PHOTOS).length + " fotos). Para os mapas, abra o mapa de cada dia uma vez com Wi-Fi.</p></section>" +
-    '<section class="block"><h3>Para resolver</h3><ul class="check">' + TRIP.checklist.map((c) =>
+    '<section class="panel reveal"><div class="panel-h"><h3>Para resolver</h3><span class="count" id="check-count">' + nDone + " de " + TRIP.checklist.length + "</span></div>" +
+    '<div class="progress" aria-hidden="true"><span id="check-bar" style="--p:' + Math.round(100 * nDone / TRIP.checklist.length) + '%"></span></div>' +
+    '<ul class="check">' + TRIP.checklist.map((c) =>
       '<li><input type="checkbox" id="' + c.id + '"' + (done[c.id] ? " checked" : "") + '><label for="' + c.id + '">' + esc(c.text) +
       (c.link ? ' <small><a href="' + c.link[1] + '" target="_blank" rel="noopener">' + esc(c.link[0]) + " ↗</a></small>" : "") +
       "</label></li>").join("") + "</ul>" +
     '<p class="fine">As marcações ficam salvas só neste aparelho.</p></section>' +
-    '<section class="block"><h3>Custos anotados</h3><div class="costs-scroll"><table class="costs">' +
+    '<section class="panel reveal"><div class="panel-h"><h3>Custos anotados</h3><span class="count">' + costs.length + " itens</span></div>" +
+    '<div class="total"><strong>' + money(total) + '</strong><span class="fine">soma, sem conversão de moeda</span></div>' +
+    '<div class="costs-scroll"><table class="costs">' +
     "<thead><tr><th>Dia</th><th>Item</th><th>Valor</th></tr></thead><tbody>" + costs.map((c) =>
-      "<tr><td>" + esc(c.d.abbr + " " + c.d.date.slice(8)) + "</td><td>" + esc(c.s.name) + "</td><td>" + money(c.s.price) + "</td></tr>").join("") +
-    '</tbody><tfoot><tr><td colspan="2">Soma</td><td>' + money(total) + "</td></tr></tfoot></table></div>" +
-    '<p class="fine">Valores como estão no roteiro, sem conversão de moeda.</p></section>' +
-    '<section class="block"><h3>Fotos e mapas</h3><p class="fine">Fotos da Wikimedia Commons, de licença livre. O autor e a licença de cada uma estão na página do arquivo. Mapas © colaboradores do OpenStreetMap.</p>' +
-    '<ul class="rows">' + Object.keys(PHOTOS).map((k) =>
-      '<li><div class="who"><strong>' + esc(PHOTOS[k].alt) + '</strong></div><div class="row-meta">' +
-      '<a class="map" href="' + photoPage(PHOTOS[k].file) + '" target="_blank" rel="noopener">Página da foto ↗</a></div></li>').join("") +
+      '<tr><td><span class="daydot d' + (dayIndex(c.d.id) + 1) + '"></span>' + esc(c.d.abbr + " " + c.d.date.slice(8)) + "</td><td>" + esc(c.s.name) + "</td><td>" + money(c.s.price) + "</td></tr>").join("") +
+    "</tbody></table></div></section>" +
+    '<section class="panel reveal"><div class="panel-h"><h3>Fotos e mapas</h3></div><p class="fine">Fotos da Wikimedia Commons, de licença livre. O autor e a licença de cada uma estão na página do arquivo. Mapas © colaboradores do OpenStreetMap.</p>' +
+    '<ul class="credits">' + Object.keys(PHOTOS).map((k) =>
+      '<li><a href="' + photoPage(PHOTOS[k].file) + '" target="_blank" rel="noopener">' + esc(PHOTOS[k].alt) + " ↗</a></li>").join("") +
     "</ul></section>";
 }
 
@@ -370,8 +439,10 @@ function start() {
   const saved = store.get("ba-day", null);
   if (state.phase === "during") currentDay = state.day.id;
   else if (dayIndex(saved) >= 0) currentDay = saved;
-  $("mast").insertAdjacentHTML("afterbegin", carouselHtml(["obelisco"], "Foto de capa")); wireCarousels($("mast"));
+  $("mast").insertAdjacentHTML("afterbegin", carouselHtml(["obelisco", "caminito2", "puente", "colon2", "rosedal"], "Fotos de Buenos Aires"));
+  wireCarousels($("mast")); autoplay($("mast").querySelector("[data-carousel]"), 6500);
   renderStatus(); renderComer(); renderAntes(); renderAppState(); route(false);
+  observeReveal($("comer-body")); observeReveal($("antes-body"));
   if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     navigator.serviceWorker.register("sw.js").catch(() => { /* sem service worker: o site funciona, só não fica offline */ });
   }
@@ -383,6 +454,16 @@ $("antes-body").addEventListener("change", (e) => {
   const done = store.get("ba-check", {});
   done[e.target.id] = e.target.checked;
   store.set("ba-check", done);
+  const n = TRIP.checklist.filter((c) => done[c.id]).length;
+  $("check-count").textContent = n + " de " + TRIP.checklist.length;
+  $("check-bar").style.setProperty("--p", Math.round(100 * n / TRIP.checklist.length) + "%");
+});
+$("comer-body").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-cat]");
+  if (b) $(b.dataset.cat).scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth", block: "start" });
+});
+$("cue").addEventListener("click", () => {
+  $("main").scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth" });
 });
 $("antes-body").addEventListener("click", (e) => {
   if (e.target.id === "offline") saveOffline();
