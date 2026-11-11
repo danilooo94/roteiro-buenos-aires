@@ -261,8 +261,12 @@ function stopHtml(d, s, i, isNext, pin) {
   const shot = carouselHtml(s.photos, "Fotos: " + s.name);
   const inner = (shot ? '<div class="shot">' + shot + "</div>" : "") +
     "<h3>" + esc(s.name) + "</h3>" +
-    (s.info ? "<p>" + esc(s.info) + "</p>" : "") +
+    (s.about ? '<div class="about"><span class="about-h">Sobre o lugar</span><p>' + esc(s.about) + "</p></div>" : "") +
+    (s.info ? '<p class="info">' + esc(s.info) + "</p>" : "") +
     (s.list ? '<ul class="sub">' + s.list.map((x) => "<li><b>" + esc(x[0]) + "</b>" + esc(x[1]) + "</li>").join("") + "</ul>" : "") +
+    (s.eat && s.eat.length ? '<div class="eat"><span class="about-h">Para comer por perto</span><ul>' + s.eat.map((e) =>
+      '<li><a href="' + mapUrl(e[0] + ", " + e[2] + ", Buenos Aires") + '" target="_blank" rel="noopener"><b>' + esc(e[0]) + "</b>" +
+      "<span>" + esc(e[1]) + "</span><small>" + esc(e[2]) + " ↗</small></a></li>").join("") + "</ul></div>" : "") +
     (meta.length ? '<div class="meta">' + meta.join("") + "</div>" : "");
   return '<li class="stop' + (s.minor ? " minor" : "") + (isNext ? " next" : "") + '" id="' + stopId(d, i) + '">' +
     '<time class="t">' + s.t + '</time><span class="rail" aria-hidden="true"><span class="dot"></span></span>' +
@@ -321,16 +325,17 @@ function renderDay() {
 }
 
 function renderComer() {
-  const open = [];
+  const open = [], near = [];
   TRIP.days.forEach((d, i) => d.stops.forEach((s) => {
     if ((s.tags || []).includes("a definir")) open.push({ d, i, s });
+    (s.eat || []).forEach((e) => near.push({ d, i, s, e }));
   }));
   $("comer-body").innerHTML =
     '<header class="view-head"><p class="eyebrow">Por categoria</p><h2>Onde comer e beber</h2>' +
     '<p class="note">Três parrillas de peso em cinco noites: vale preencher as refeições em aberto com outra coisa.</p></header>' +
     '<nav class="cats" aria-label="Categorias">' + TRIP.places.map((c, k) =>
       '<button type="button" data-cat="cat-' + k + '">' + esc(c.cat) + "</button>").join("") +
-    '<button type="button" data-cat="cat-open">Em aberto</button></nav>' +
+    '<button type="button" data-cat="cat-near">Perto dos passeios</button><button type="button" data-cat="cat-open">Em aberto</button></nav>' +
     TRIP.places.map((c, k) =>
       '<section class="panel reveal" id="cat-' + k + '"><div class="panel-h"><h3>' + esc(c.cat) + '</h3><span class="count">' + c.items.length +
       '</span></div><ul class="rows">' + c.items.map((p) => {
@@ -340,6 +345,12 @@ function renderComer() {
           (di >= 0 ? '<a class="when d' + (di + 1) + '" href="#' + p.day + '">' + esc(p.when) + "</a>" : '<span class="tag">' + esc(p.tag) + "</span>") +
           '<a class="map" href="' + mapUrl(p.name + ", Buenos Aires") + '" target="_blank" rel="noopener">Mapa ↗</a></div></li>';
       }).join("") + "</ul></section>").join("") +
+    '<section class="panel reveal" id="cat-near"><div class="panel-h"><h3>Perto dos passeios</h3><span class="count">' + near.length +
+    '</span></div><ul class="rows">' + near.map((o) =>
+      '<li><div class="who"><strong>' + esc(o.e[0]) + "</strong><span>" + esc(o.e[1]) + " Perto de: " + esc(o.s.name) + ".</span></div>" +
+      '<div class="row-meta"><a class="when d' + (o.i + 1) + '" href="#' + o.d.id + '">' + esc(o.d.abbr + " " + o.s.t) + "</a>" +
+      '<a class="map" href="' + mapUrl(o.e[0] + ", " + o.e[2] + ", Buenos Aires") + '" target="_blank" rel="noopener">Mapa ↗</a></div></li>').join("") +
+    "</ul></section>" +
     '<section class="panel open reveal" id="cat-open"><div class="panel-h"><h3>Ainda em aberto</h3><span class="count">' + open.length +
     '</span></div><ul class="rows">' + open.map((o) =>
       '<li><div class="who"><strong>' + esc(o.s.name) + "</strong><span>" + esc(o.s.info || "Sem lugar definido.") + "</span></div>" +

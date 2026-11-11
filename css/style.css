@@ -644,3 +644,28 @@ button.map:hover { text-decoration: none; background: color-mix(in srgb, var(--d
 @keyframes dayin-r { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
 .daynav { transition: opacity .3s, transform .3s var(--ease); }
 .on-cover .daynav { opacity: 0; pointer-events: none; }
+
+/* Sobre o lugar: texto de contexto, separado das informações práticas */
+.about {
+  position: relative; display: grid; gap: .2rem; padding: .1rem 0 .1rem .85rem;
+  border-left: 3px solid var(--day);
+}
+.about-h { font: 600 .62rem/1.5 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.stop .about p { color: var(--ink); font-size: .9rem; line-height: 1.5; text-wrap: pretty; }
+.stop .info { font-size: .88rem; }
+.stop .info::before {
+  content: "Na prática · "; font: 600 .62rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+.stop.minor .info::before { content: none; }
+
+/* Para comer por perto */
+.eat { display: grid; gap: .35rem; margin-top: .1rem; }
+.eat ul { display: grid; gap: .35rem; }
+.eat a {
+  display: grid; gap: .1rem; padding: .55rem .7rem; border-radius: 12px; text-decoration: none; color: var(--ink);
+  background: var(--surface-2); border: 1px solid transparent; transition: border-color .2s;
+}
+.eat a:hover { border-color: var(--day); }
+.eat b { font: 700 .92rem/1.25 var(--display); font-stretch: 104%; }
+.eat span { color: var(--muted); font-size: .84rem; line-height: 1.35; }
+.eat small { font: 500 .66rem/1.4 var(--mono); letter-spacing: .04em; color: var(--accent); }

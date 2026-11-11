@@ -2,7 +2,7 @@
 
 Roteiro dia a dia de uma viagem de 7 dias a Buenos Aires (06 a 12 de dezembro de 2026), em formato de app web para celular. Dá para instalar na tela inicial e usar sem internet.
 
-- **Roteiro**: cada dia é desenhado como uma linha de transporte, com horários, paradas, preços, tags, carrossel de fotos e links para o Google Maps. No topo de cada dia há um mapa com as paradas numeradas.
+- **Roteiro**: cada dia é desenhado como uma linha de transporte, com horários, paradas, preços, tags, carrossel de fotos, um texto sobre cada lugar, sugestões para comer por perto e links para o Google Maps. Dá para trocar de dia pelas setas ← → do teclado, pelas setas laterais (computador) ou arrastando o dedo (celular). No topo de cada dia há um mapa com as paradas numeradas.
 - **Comer**: restaurantes, cafés, sorveterias e bares por categoria, com atalho para o dia em que aparecem.
 - **Antes de ir**: voos e hotel, instalação do app e download das fotos para usar offline, checklist de reservas (salvo no aparelho), soma dos custos anotados e créditos das fotos.
 
@@ -44,6 +44,9 @@ Para mudar o roteiro, edite só o `js/data.js`. Cada dia aceita `photos` (lista 
 | `photos` | lista de chaves de fotos em `PHOTOS`; mais de uma vira carrossel |
 | `minor`  | `true` para paradas secundárias (deslocamentos, hotel); não entram no mapa |
 | `list`   | lista de pares `[nome, descrição]`              |
+| `about`  | descrição curta do lugar (aparece como "Sobre o lugar") |
+| `eat`    | lugares para comer por perto: `[nome, descrição, endereço]`; também aparecem em Comer → "Perto dos passeios" |
+| `hotel`  | `true` nas paradas no hotel; ganham botão para o marcador "H" no mapa |
 
 Para achar as coordenadas de um lugar: no Google Maps, clique com o botão direito no ponto e copie os números que aparecem no topo do menu.
 
