@@ -434,6 +434,9 @@ button.map:hover { text-decoration: none; background: color-mix(in srgb, var(--d
   display: grid; place-items: center; background: var(--sun); color: var(--on-d6); font: 800 .85rem/1 var(--display);
 }
 .tip b { display: block; font: 600 .66rem/1.5 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sun-ink); }
+.tip.rain { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
+.tip.rain::before { content: "☂"; background: var(--accent); color: var(--surface); font-size: .8rem; }
+.tip.rain b { color: var(--ink); }
 .pager { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin-top: 1.6rem; }
 .pager a {
   display: flex; align-items: center; gap: .6rem; padding: .8rem .9rem; border-radius: var(--r);

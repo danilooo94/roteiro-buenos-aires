@@ -309,6 +309,7 @@ function renderDay() {
     mapHtml(d) +
     '<ol class="stops">' + d.stops.map((s, k) => stopHtml(d, s, k, s === nextStop, pins[k])).join("") + "</ol>" +
     (d.tip ? '<p class="tip reveal"><b>Dica</b>' + esc(d.tip) + "</p>" : "") +
+    (d.rain ? '<p class="tip rain reveal"><b>Se chover</b>' + esc(d.rain) + "</p>" : "") +
     '<nav class="pager" aria-label="Outros dias">' +
     (prev ? pagerLink(prev, "pv", -1) : "") + (next ? pagerLink(next, "nx", 1) : "") +
     "</nav>";
@@ -358,12 +359,24 @@ function renderComer() {
     "</ul></section>";
 }
 
+/* Painel de checklist com contador e barra; as marcações de todas as listas ficam em "ba-check". */
+const CHECK_LISTS = { check: () => TRIP.checklist, shop: () => TRIP.shopping };
+function checkPanel(key, title, items, done, fine) {
+  const n = items.filter((c) => done[c.id]).length;
+  return '<section class="panel reveal" data-list="' + key + '"><div class="panel-h"><h3>' + esc(title) + '</h3><span class="count" id="' + key + '-count">' + n + " de " + items.length + "</span></div>" +
+    '<div class="progress" aria-hidden="true"><span id="' + key + '-bar" style="--p:' + Math.round(100 * n / items.length) + '%"></span></div>' +
+    '<ul class="check">' + items.map((c) =>
+      '<li><input type="checkbox" id="' + c.id + '"' + (done[c.id] ? " checked" : "") + '><label for="' + c.id + '">' + esc(c.text) +
+      (c.link ? ' <small><a href="' + c.link[1] + '" target="_blank" rel="noopener">' + esc(c.link[0]) + " ↗</a></small>" : "") +
+      "</label></li>").join("") + "</ul>" +
+    '<p class="fine">' + esc(fine || "As marcações ficam salvas só neste aparelho.") + "</p></section>";
+}
+
 function renderAntes() {
   const done = store.get("ba-check", {});
   const costs = [];
   TRIP.days.forEach((d) => d.stops.forEach((s) => { if (s.price) costs.push({ d, s }); }));
   const total = costs.reduce((a, c) => a + c.s.price, 0);
-  const nDone = TRIP.checklist.filter((c) => done[c.id]).length;
   $("antes-body").innerHTML =
     '<header class="view-head"><p class="eyebrow">Preparação</p><h2>Antes de ir</h2>' +
     '<p class="note">Segunda 07/12 é dia não laborável e terça 08/12 é feriado: a cidade estará cheia de domingo a terça, então vale deixar tudo reservado.</p></header>' +
@@ -381,13 +394,9 @@ function renderAntes() {
     '<p class="fine" id="ios-hint" hidden>No iPhone: abra no Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”.</p>' +
     '<p class="fine" id="offline-state" aria-live="polite">O roteiro já fica guardado depois da primeira visita. As fotos e os mapas ficam guardados conforme você os abre; o botão acima baixa todas as fotos de uma vez (cerca de ' +
     Object.keys(PHOTOS).length + " fotos). Para os mapas, abra o mapa de cada dia uma vez com Wi-Fi.</p></section>" +
-    '<section class="panel reveal"><div class="panel-h"><h3>Para resolver</h3><span class="count" id="check-count">' + nDone + " de " + TRIP.checklist.length + "</span></div>" +
-    '<div class="progress" aria-hidden="true"><span id="check-bar" style="--p:' + Math.round(100 * nDone / TRIP.checklist.length) + '%"></span></div>' +
-    '<ul class="check">' + TRIP.checklist.map((c) =>
-      '<li><input type="checkbox" id="' + c.id + '"' + (done[c.id] ? " checked" : "") + '><label for="' + c.id + '">' + esc(c.text) +
-      (c.link ? ' <small><a href="' + c.link[1] + '" target="_blank" rel="noopener">' + esc(c.link[0]) + " ↗</a></small>" : "") +
-      "</label></li>").join("") + "</ul>" +
-    '<p class="fine">As marcações ficam salvas só neste aparelho.</p></section>' +
+    checkPanel("check", "Para resolver", TRIP.checklist, done) +
+    checkPanel("shop", "Levar de volta", TRIP.shopping, done,
+      "Para comprar nos supermercados de domingo, segunda e sexta. As marcações ficam salvas só neste aparelho.") +
     '<section class="panel reveal"><div class="panel-h"><h3>Custos anotados</h3><span class="count">' + costs.length + " itens</span></div>" +
     '<div class="total"><strong>' + money(total) + '</strong><span class="fine">soma, sem conversão de moeda</span></div>' +
     '<div class="costs-scroll"><table class="costs">' +
@@ -534,9 +543,10 @@ $("antes-body").addEventListener("change", (e) => {
   const done = store.get("ba-check", {});
   done[e.target.id] = e.target.checked;
   store.set("ba-check", done);
-  const n = TRIP.checklist.filter((c) => done[c.id]).length;
-  $("check-count").textContent = n + " de " + TRIP.checklist.length;
-  $("check-bar").style.setProperty("--p", Math.round(100 * n / TRIP.checklist.length) + "%");
+  const key = e.target.closest("[data-list]").dataset.list, items = CHECK_LISTS[key]();
+  const n = items.filter((c) => done[c.id]).length;
+  $(key + "-count").textContent = n + " de " + items.length;
+  $(key + "-bar").style.setProperty("--p", Math.round(100 * n / items.length) + "%");
 });
 $("comer-body").addEventListener("click", (e) => {
   const b = e.target.closest("[data-cat]");

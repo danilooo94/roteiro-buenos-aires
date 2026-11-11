@@ -30,7 +30,7 @@ manifest.webmanifest   nome, cores e ícones do app instalado
 icons/                 ícones do app
 ```
 
-Para mudar o roteiro, edite só o `js/data.js`. Cada dia aceita `photos` (lista de chaves de `PHOTOS`, que vira o carrossel do topo). Cada parada aceita:
+Para mudar o roteiro, edite só o `js/data.js`. Cada dia aceita `photos` (lista de chaves de `PHOTOS`, que vira o carrossel do topo), `note` (aviso no topo), `tip` (dica no fim) e `rain` (plano para dia de chuva, aparece como "Se chover"). Fora dos dias, `checklist` e `shopping` são as listas "Para resolver" e "Levar de volta" em "Antes de ir". Cada parada aceita:
 
 | Campo    | O que é                                         |
 |----------|-------------------------------------------------|

@@ -30,7 +30,8 @@ const TRIP = {
         { t: "18:00", name: "Hotel", minor: true, hotel: true },
         { t: "20:30", name: "Jantar na La Brigada", about: "Parrilla clássica de San Telmo, com paredes cobertas de camisas de futebol. O garçom costuma cortar a carne com uma colher, para mostrar como ela é macia.", info: "Parrilla em que a carne é cortada com colher.",
           ll: [-34.61844, -58.37274], tags: ["reserva"], map: "La Brigada, Estados Unidos 465, Buenos Aires" }
-      ] },
+      ],
+      rain: "O Mercado e o Zanjón são cobertos; a feira da rua Defensa encolhe. No lugar da Plaza Dorrego, o Museo Etnográfico (Moreno 350, perto do hotel) abre sábados e domingos das 15h às 19h." },
 
     { id: "dia-07", date: "2026-12-07", wd: "Segunda", abbr: "seg", title: "Centro histórico e Puerto Madero",
       photos: ["barolo", "congreso", "rosada", "puente"],
@@ -56,7 +57,8 @@ const TRIP = {
         { t: "18:00", name: "Hotel, descanso e banho", minor: true, hotel: true },
         { t: "21:00", name: "Jantar em Puerto Madero", eat: [["Siga la Vaca", "Parrilla livre, informal e farta, à beira do dique.", "Av. Alicia Moreau de Justo 1714"], ["Chila", "Cozinha argentina contemporânea em menu-degustação; reservar.", "Av. Alicia Moreau de Justo 1160"]], about: "Antigo porto do fim do século XIX, abandonado por décadas e revitalizado a partir dos anos 1990. Os galpões de tijolo à beira dos diques viraram restaurantes, e as ruas do bairro levam nomes de mulheres.", tags: ["a definir"] }
       ],
-      tip: "Sem o shopping, dá para adiantar o Obelisco para as 15h e chegar mais cedo ao hotel." },
+      tip: "Sem o shopping, dá para adiantar o Obelisco para as 15h e chegar mais cedo ao hotel.",
+      rain: "Táxi no lugar da caminhada pela Av. de Mayo, e as Galerías Pacífico deixam de ser opcionais. Em Puerto Madero, o Museo del Humor (Av. de los Italianos 851, até as 18h) substitui a Puente de la Mujer. A Colección Fortabat fecha às segundas." },
 
     { id: "dia-08", date: "2026-12-08", wd: "Terça", abbr: "ter", title: "Recoleta e Teatro Colón",
       photos: ["recoleta", "pilar", "ateneo", "colon"],
@@ -81,7 +83,8 @@ const TRIP = {
         { t: "22:00", name: "Pizzería Güerrín", about: "Pizzaria de 1932 na Corrientes, ícone da pizza portenha: massa alta e muita muçarela. A tradição é comer em pé no balcão e pedir uma fainá, uma fatia de massa de grão-de-bico, por cima da pizza.", info: "Av. Corrientes 1368, a poucos minutos do teatro.", ll: [-34.60410, -58.38599],
           map: "Pizzería Güerrín, Av. Corrientes 1368, Buenos Aires" }
       ],
-      tip: "A tarde é a parte mais apertada do roteiro. Se atrasar, a Bond Street é o corte mais fácil; em feriado parte das lojas dela pode estar fechada." },
+      tip: "A tarde é a parte mais apertada do roteiro. Se atrasar, a Bond Street é o corte mais fácil; em feriado parte das lojas dela pode estar fechada.",
+      rain: "Encurtar o cemitério e a feira e ficar mais no Centro Cultural Recoleta e no El Ateneo. O Museo del Libro y de la Lengua (Las Heras 2555, de terça a domingo, das 14h às 19h) fica a 10 min a pé; em feriado, confirmar o horário." },
 
     { id: "dia-09", date: "2026-12-09", wd: "Quarta", abbr: "qua", title: "Palermo e Don Julio",
       photos: ["rosedal", "floralis", "japones", "planetario"],
@@ -92,7 +95,10 @@ const TRIP = {
           ll: [-34.58392, -58.39292], map: "Museo Nacional de Bellas Artes, Buenos Aires" },
         { t: "12:00", name: "MALBA", about: "Museu de arte latino-americana inaugurado em 2001 a partir da coleção de Eduardo Costantini. Guarda o Abaporu, de Tarsila do Amaral, além de obras de Frida Kahlo, Diego Rivera e Xul Solar.", info: "Frida Kahlo, Xul Solar, Berni. Táxi curto ou ~15 min a pé desde o Bellas Artes.",
           photos: ["malba"], ll: [-34.57688, -58.40339], price: 24, map: "MALBA, Av. Figueroa Alcorta 3415, Buenos Aires" },
-        { t: "13:00", name: "Almoço", tags: ["a definir"] },
+        { t: "13:00", name: "Almoço", tags: ["a definir"], info: "Três opções no caminho entre o MALBA e o Jardim Japonês.",
+          eat: [["Ninina Malba", "Café do próprio MALBA, com sanduíches, saladas e hambúrguer; não precisa sair do museu.", "Av. Figueroa Alcorta 3415"],
+                ["Casa Cavia", "Casarão de 1927 com restaurante, confeitaria, livraria e floricultura, a 4 quadras do MALBA.", "Cavia 2985"],
+                ["Wakayama", "Restaurante japonês dentro do Jardim Japonês, aberto no almoço; dá para comer e emendar a visita.", "Jardín Japonés, Av. Casares 3450"]] },
         { t: "14:00", name: "Jardim Japonês", about: "Jardim de 1967, presente da comunidade japonesa à cidade. Tem lago com carpas, pontes vermelhas, casa de chá e um bonsai em cada canto.", photos: ["japones"], ll: [-34.57514, -58.40926], price: 85, map: "Jardín Japonés, Buenos Aires" },
         { t: "15:00", name: "Bosques de Palermo", about: "O Parque Tres de Febrero, criado no fim do século XIX, é o grande pulmão verde da cidade. O Rosedal reúne milhares de roseiras ao redor de um lago, e o Planetário Galileo Galilei parece um disco voador pousado no parque.", info: "Rosedal e suas pérgolas, Museu Sívori ao lado e o Planetário.",
           photos: ["rosedal", "planetario"], ll: [-34.56968, -58.43196], map: "Rosedal de Palermo, Buenos Aires" },
@@ -103,7 +109,8 @@ const TRIP = {
           ll: [-34.58629, -58.42428], tags: ["reserva"], map: "Don Julio, Guatemala 4699, Buenos Aires" },
         { t: "00:30", name: "Uptown Bar", about: "Bar subterrâneo cuja entrada imita uma estação do metrô de Nova York, com um vagão de verdade lá dentro. Coquetéis, comida e DJ até tarde.", info: "Arévalo 2030. Às quartas fecha às 2h.", tags: ["se der tempo"],
           ll: [-34.57802, -58.43728], map: "Uptown, Arévalo 2030, Buenos Aires" }
-      ] },
+      ],
+      rain: "MALBA, Bellas Artes e Jardim Japonês seguram a manhã. Para a tarde, trocar Bosques e Rosedal pelo Museo Evita (Lafinur 2988, de terça a domingo, das 11h às 19h) ou pelo Museo de Arte Decorativo (Av. del Libertador 1902, de quarta a domingo, das 13h às 19h)." },
 
     { id: "dia-10", date: "2026-12-10", wd: "Quinta", abbr: "qui", title: "Tigre, Barrio Chino e tango",
       photos: ["tigre", "lujan", "chino", "fragata"],
@@ -127,7 +134,8 @@ const TRIP = {
           ll: [-34.60413, -58.36672], tags: ["reserva"], map: "Cabaña Las Lilas, Puerto Madero, Buenos Aires" },
         { t: "21:30", name: "Show de tango no La Ventana", about: "Casa de tango num casarão de San Telmo, com jantar e show de orquestra, cantores e casais de dança. O espetáculo passa pela história do tango e costuma incluir números de folclore.", info: "Balcarce 431. Conferir no voucher o horário de chegada.",
           ll: [-34.61282, -58.37077], tags: ["ingresso"], map: "La Ventana Tango, Balcarce 431, Buenos Aires" }
-      ] },
+      ],
+      rain: "Com chuva forte, o barco perde a graça: em Tigre, o Museo de Arte Tigre, num palácio de 1912 à beira do rio (Paseo Victorica 972, de quarta a sexta, das 9h às 19h). A Fragata fecha com chuva; no lugar, a Colección Fortabat, em Puerto Madero (Olga Cossettini 141, de terça a domingo, das 12h às 20h)." },
 
     { id: "dia-11", date: "2026-12-11", wd: "Sexta", abbr: "sex", title: "La Boca, San Telmo e jazz em Palermo",
       photos: ["caminito", "caminito2", "bombonera", "lezama"],
@@ -140,6 +148,9 @@ const TRIP = {
         { t: "12:00", name: "La Bombonera", about: "Estádio do Boca Juniors, inaugurado em 1940, com o formato de caixa de bombom que deu o apelido. As arquibancadas quase verticais balançam com a torcida, e daí o ditado: a Bombonera não treme, pulsa.", photos: ["bombonera", "bombonera2"], info: "Museo de la Pasión Boquense e tour do estádio. Em dia de jogo não há tour.",
           ll: [-34.63646, -58.36449], price: 146, tags: ["ingresso"], map: "Museo de la Pasión Boquense, Brandsen 805, Buenos Aires" },
         { t: "13:30", name: "Almoço", info: "Sugestão: bodegón El Obrero, de táxi.", tags: ["a definir"],
+          eat: [["El Obrero", "Bodegão de 1954, de toalha xadrez e paredes cheias de camisas de futebol; sem reserva.", "Agustín R. Caffarena 64"],
+                ["Banchero", "Pizzaria de 1932, a poucas quadras da Bombonera, famosa pela fugazza com queijo.", "Av. Almirante Brown 1200"],
+                ["Il Mattarello", "Cantina italiana de massas caseiras, de ambiente familiar.", "Martín Rodríguez 517"]],
           ll: [-34.62968, -58.35683], map: "El Obrero, La Boca, Buenos Aires" },
         { t: "15:00", name: "Parque Lezama", eat: [["Bar Británico", "Café notável na esquina do parque, aberto até tarde.", "Av. Brasil 399"]], about: "Um dos lugares apontados como cenário da primeira fundação de Buenos Aires, em 1536. Abriga o Museu Histórico Nacional, e na esquina a Igreja Ortodoxa Russa, de 1904, chama atenção com suas cúpulas azuis.", info: "E as cúpulas azuis da Igreja Ortodoxa Russa, na Brasil 315.", photos: ["lezama", "russa"],
           ll: [-34.62712, -58.36928], map: "Parque Lezama, Buenos Aires" },
@@ -150,7 +161,8 @@ const TRIP = {
         { t: "20:00", name: "Jazz no Bebop Club", about: "Clube de jazz intimista, com shows ao vivo de músicos argentinos e convidados internacionais. Vale chegar cedo para pegar mesa perto do palco.", info: "Uriarte 1658.", price: 90, tags: ["ingresso"],
           ll: [-34.58701, -58.43157], map: "Bebop Club, Uriarte 1658, Buenos Aires" }
       ],
-      tip: "Em La Boca, fiquem no circuito turístico e façam de táxi os trechos entre o bairro e o Parque Lezama." },
+      tip: "Em La Boca, fiquem no circuito turístico e façam de táxi os trechos entre o bairro e o Parque Lezama.",
+      rain: "O museu do Quinquela e o da Bombonera são cobertos. Perto do El Obrero, o Museo del Cine (Agustín R. Caffarena 51) abre de quarta a sexta, das 11h às 18h. No Parque Lezama, entrar no Museo Histórico Nacional (Defensa 1652, de quarta a domingo, das 11h às 19h)." },
 
     { id: "dia-12", date: "2026-12-12", wd: "Sábado", abbr: "sáb", title: "Saída", photos: ["madero2"],
       stops: [
@@ -192,6 +204,15 @@ const TRIP = {
       { name: "La Ventana", what: "San Telmo. Show de tango.", day: "dia-10", when: "qui 21:30" },
       { name: "Pulpería Quilapán", what: "San Telmo.", day: "dia-11", when: "sex 17:30" },
       { name: "Bebop Club", what: "Palermo Soho. Jazz.", day: "dia-11", when: "sex 20:00" } ] }
+  ],
+
+  // Lista de compras para trazer de volta (aparece em "Antes de ir", com as marcações salvas no aparelho).
+  shopping: [
+    { id: "shop-ddl", text: "Doce de leite: La Serenísima Colonial, de supermercado, ou Havanna para presente" },
+    { id: "shop-alf", text: "Alfajores: Havanna e Cachafaz para presente; Jorgito e Guaymallén, mais baratos, no supermercado" },
+    { id: "shop-vinho", text: "Vinho: Malbec de Mendoza" },
+    { id: "shop-mala", text: "Doce de leite e vinho vão na mala despachada (contam como líquido), com as garrafas embrulhadas em roupa" },
+    { id: "shop-receita", text: "Conferir no site da Receita Federal o limite de bebida alcoólica sem imposto antes de comprar muito vinho" }
   ],
 
   checklist: [
