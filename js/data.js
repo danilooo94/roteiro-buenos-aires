@@ -24,7 +24,10 @@ const TRIP = {
           ll: [-34.61669, -58.37180], price: 121, tags: ["reservar"], map: "El Zanjón de Granados, Defensa 755, Buenos Aires" },
         { t: "17:00", name: "Plaza Dorrego e Paseo de la Historieta", eat: [["Bar Dorrego", "Bar antigo na esquina da praça, de piso de madeira e paredes rabiscadas; bom para um café ou cerveja.", "Defensa 1098"]], about: "A segunda praça mais antiga da cidade é o coração da feira de domingo e, à noite, vira pista de milonga ao ar livre. Pelas calçadas próximas, o Paseo de la Historieta espalha estátuas de personagens dos quadrinhos argentinos, como a Mafalda.", info: "Esculturas dos quadrinhos argentinos pelas calçadas.",
           ll: [-34.62049, -58.37178], map: "Plaza Dorrego, San Telmo, Buenos Aires" },
-        { t: "17:30", name: "Hotel", minor: true, hotel: true },
+        { t: "17:30", name: "Supermercado: Carrefour Express", info: "Na volta para o hotel, a 3 quadras dele (Balcarce 395). Aos domingos abre das 11h às 20h. Primeira rodada de compras para levar.",
+          list: [["Doce de leite", "La Serenísima ou Havanna; pote de vidro ou plástico vai na mala despachada"], ["Alfajores", "Havanna, Cachafaz, Jorgito, Guaymallén"], ["Vinho", "Malbec de Mendoza; embrulhar bem e despachar"]],
+          ll: [-34.61214, -58.37061], tags: ["compras"], map: "Carrefour Express, Balcarce 395, Buenos Aires" },
+        { t: "18:00", name: "Hotel", minor: true, hotel: true },
         { t: "20:30", name: "Jantar na La Brigada", about: "Parrilla clássica de San Telmo, com paredes cobertas de camisas de futebol. O garçom costuma cortar a carne com uma colher, para mostrar como ela é macia.", info: "Parrilla em que a carne é cortada com colher.",
           ll: [-34.61844, -58.37274], tags: ["reserva"], map: "La Brigada, Estados Unidos 465, Buenos Aires" }
       ] },
@@ -48,6 +51,8 @@ const TRIP = {
           ll: [-34.60417, -58.39065], map: "Heladería Cadore, Av. Corrientes 1695, Buenos Aires" },
         { t: "17:15", name: "Puente de la Mujer", about: "Ponte giratória para pedestres do espanhol Santiago Calatrava, inaugurada em 2001. O mastro inclinado lembra um casal dançando tango, e a ponte gira 90 graus para dar passagem aos barcos.", photos: ["puente", "madero"], info: "Uber até Puerto Madero e caminhada pelos diques.",
           ll: [-34.60802, -58.36513], map: "Puente de la Mujer, Puerto Madero, Buenos Aires" },
+        { t: "17:40", name: "Supermercado: Dia", info: "Na esquina do hotel, Av. Paseo Colón 470. Rede de preço baixo, boa para alfajores e doce de leite. Mesmo em dia não laborável, os supermercados abrem.",
+          ll: [-34.61276, -58.36901], tags: ["compras"], map: "Supermercado Dia, Av. Paseo Colón 470, Buenos Aires" },
         { t: "18:00", name: "Hotel, descanso e banho", minor: true, hotel: true },
         { t: "21:00", name: "Jantar em Puerto Madero", eat: [["Siga la Vaca", "Parrilla livre, informal e farta, à beira do dique.", "Av. Alicia Moreau de Justo 1714"], ["Chila", "Cozinha argentina contemporânea em menu-degustação; reservar.", "Av. Alicia Moreau de Justo 1160"]], about: "Antigo porto do fim do século XIX, abandonado por décadas e revitalizado a partir dos anos 1990. Os galpões de tijolo à beira dos diques viraram restaurantes, e as ruas do bairro levam nomes de mulheres.", tags: ["a definir"] }
       ],
@@ -126,7 +131,7 @@ const TRIP = {
 
     { id: "dia-11", date: "2026-12-11", wd: "Sexta", abbr: "sex", title: "La Boca, San Telmo e jazz em Palermo",
       photos: ["caminito", "caminito2", "bombonera", "lezama"],
-      note: "O Bebop fica hoje em Palermo Soho, não em San Telmo, por isso o táxi das 19:15.",
+      note: "O Bebop fica hoje em Palermo Soho, não em San Telmo, por isso o táxi das 19:00, que passa no hotel para deixar as compras.",
       stops: [
         { t: "10:30", name: "Caminito e arredores", about: "Rua-museu criada em 1959 pelo pintor Benito Quinquela Martín num antigo leito de trem. As casas de chapa eram pintadas com sobras de tinta dos navios, e o nome vem de um tango de Juan de Dios Filiberto.", info: "Ainda vazio a essa hora.", photos: ["caminito", "caminito2"], ll: [-34.63936, -58.36257],
           map: "Caminito, La Boca, Buenos Aires" },
@@ -139,7 +144,9 @@ const TRIP = {
         { t: "15:00", name: "Parque Lezama", eat: [["Bar Británico", "Café notável na esquina do parque, aberto até tarde.", "Av. Brasil 399"]], about: "Um dos lugares apontados como cenário da primeira fundação de Buenos Aires, em 1536. Abriga o Museu Histórico Nacional, e na esquina a Igreja Ortodoxa Russa, de 1904, chama atenção com suas cúpulas azuis.", info: "E as cúpulas azuis da Igreja Ortodoxa Russa, na Brasil 315.", photos: ["lezama", "russa"],
           ll: [-34.62712, -58.36928], map: "Parque Lezama, Buenos Aires" },
         { t: "17:30", name: "Pulpería Quilapán", about: "Casarão restaurado que recria uma pulpería, o armazém e bar das vilas do interior argentino. Tem bar, empório de produtos regionais e um pátio tranquilo.", ll: [-34.62357, -58.37103], map: "Pulpería Quilapán, Defensa 1344, Buenos Aires" },
-        { t: "19:15", name: "Táxi para Palermo Soho", info: "25 a 30 min.", minor: true },
+        { t: "18:30", name: "Supermercado: Coto", info: "Perú 1496, a 3 quadras da Pulpería. O maior dos três, com mais opção de vinhos: bom para fechar as compras na véspera da volta.",
+          ll: [-34.62542, -58.37371], tags: ["compras"], map: "Coto, Perú 1496, Buenos Aires" },
+        { t: "19:00", name: "Táxi para Palermo Soho", info: "Com parada rápida no hotel para deixar as compras: 35 a 40 min no total.", minor: true },
         { t: "20:00", name: "Jazz no Bebop Club", about: "Clube de jazz intimista, com shows ao vivo de músicos argentinos e convidados internacionais. Vale chegar cedo para pegar mesa perto do palco.", info: "Uriarte 1658.", price: 90, tags: ["ingresso"],
           ll: [-34.58701, -58.43157], map: "Bebop Club, Uriarte 1658, Buenos Aires" }
       ],
