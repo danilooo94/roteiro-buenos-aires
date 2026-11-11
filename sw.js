@@ -2,7 +2,7 @@
    - Arquivos do site: tenta a rede primeiro (para pegar edições) e usa a cópia guardada se estiver offline.
    - Fotos, blocos de mapa, fontes e Leaflet: usa a cópia guardada se existir; senão baixa e guarda.
    Ao mudar a lista SHELL_FILES, suba VERSION para renovar a cópia do site. */
-const VERSION = "v2";
+const VERSION = "v3";
 const SHELL = "ba-shell-" + VERSION;
 const PHOTOS = "ba-fotos-v1";          // mesmo nome usado em app.js (botão "Baixar fotos")
 const TILES = "ba-mapas-v1";
@@ -21,7 +21,7 @@ const CDN_FILES = [
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
     const cache = await caches.open(SHELL);
-    await cache.addAll(SHELL_FILES);
+    await cache.addAll(SHELL_FILES.map((u) => new Request(u, { cache: "reload" })));   // ignora o cache HTTP do navegador
     await Promise.all(CDN_FILES.map((u) => cache.add(new Request(u, { mode: "cors" })).catch(() => {})));
     await self.skipWaiting();
   })());
@@ -48,7 +48,8 @@ self.addEventListener("fetch", (e) => {
 
 async function networkFirst(req) {
   const cache = await caches.open(SHELL);
-  const net = fetch(req).then((res) => { if (res.ok) cache.put(req, res.clone()); return res; });
+  // cache: "no-cache" confere com o servidor; sem isso o navegador pode misturar arquivos novos e antigos por até 10 min.
+  const net = fetch(req, { cache: "no-cache" }).then((res) => { if (res.ok) cache.put(req, res.clone()); return res; });
   net.catch(() => {});
   const slow = new Promise((_, reject) => setTimeout(() => reject(new Error("rede lenta")), 4000));
   try {

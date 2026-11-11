@@ -134,7 +134,7 @@ const stateKey = (s) => s.phase + (s.day ? s.day.id : "") + (s.next ? s.next.t :
 /* ===== MAPA DO DIA =====
    Leaflet com o mapa do OpenStreetMap (no tema escuro, um filtro de CSS escurece os blocos).
    As paradas com "ll" viram marcadores numerados, ligados por uma linha tracejada (reta, não é o trajeto). */
-let dayMap = null, dayPins = [];
+let dayMap = null, dayPins = [], hotelPin = null;
 
 function mappedStops(d) {
   return d.stops.map((s, i) => ({ s, i })).filter((x) => x.s.ll && !x.s.minor);
@@ -142,7 +142,7 @@ function mappedStops(d) {
 
 function mapHtml(d) {
   const pts = mappedStops(d);
-  if (!pts.length) return "";
+  if (!pts.length && !(TRIP.hotel && TRIP.hotel.ll)) return "";
   return '<details class="daymap-box reveal" id="daymap-box"' + (store.get("ba-map-open", true) ? " open" : "") + ">" +
     "<summary><span>Mapa do dia</span><small>" + pts.length + (pts.length === 1 ? " parada" : " paradas") + "</small></summary>" +
     '<div class="daymap" id="daymap" role="region" aria-label="Mapa das paradas do dia"></div>' +
@@ -152,7 +152,7 @@ function mapHtml(d) {
 
 function buildMap(d, nextStop) {
   if (dayMap) { dayMap.remove(); dayMap = null; }
-  dayPins = [];
+  dayPins = []; hotelPin = null;
   const el = $("daymap");
   if (!el) return;
   // O OpenStreetMap recusa blocos pedidos sem página de origem (Referer), o que acontece com o arquivo aberto do disco.
@@ -180,12 +180,22 @@ function buildMap(d, nextStop) {
       '<button type="button" class="pop-go" data-goto="' + stopId(d, x.i) + '">Ver no roteiro ↓</button>');
     dayPins[x.i] = m;
   });
-  if (pts.length === 1) dayMap.setView(pts[0].s.ll, 12);
-  else dayMap.fitBounds(L.latLngBounds(pts.map((x) => x.s.ll)), { padding: [28, 28], maxZoom: 16 });
+  const h = TRIP.hotel;                                // hotel em todos os dias, com marcador próprio
+  if (h && h.ll) {
+    hotelPin = L.marker(h.ll, { title: "Hotel " + h.name, keyboard: true, zIndexOffset: -100,
+      icon: L.divIcon({ className: "pin-wrap", html: '<span class="pin hotel"><b>H</b></span>', iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14] })
+    }).addTo(dayMap);
+    hotelPin.bindPopup('<p class="pop-t">Hotel</p><p class="pop-n">' + esc(h.name) + "</p>" +
+      '<p class="pop-t">' + esc(h.aka + " · " + h.address) + "</p>" +
+      '<a class="pop-go" href="' + mapUrl(h.map) + '" target="_blank" rel="noopener">Google Maps ↗</a>');
+  }
+  const all = pts.map((x) => x.s.ll).concat(h && h.ll ? [h.ll] : []);
+  if (all.length === 1) dayMap.setView(all[0], 15);
+  else dayMap.fitBounds(L.latLngBounds(all), { padding: [32, 32], maxZoom: 16 });
 }
 
 function showOnMap(i) {
-  const box = $("daymap-box"), m = dayPins[i];
+  const box = $("daymap-box"), m = i === "hotel" ? hotelPin : dayPins[i];
   if (!box || !m) return;
   box.open = true;
   box.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth", block: "center" });
@@ -246,6 +256,7 @@ function stopHtml(d, s, i, isNext, pin) {
   if (s.price) meta.push('<span class="price">' + money(s.price) + "</span>");
   (s.tags || []).forEach((t) => meta.push('<span class="tag">' + esc(t) + "</span>"));
   if (pin) meta.push('<button type="button" class="map map-jump" data-stop="' + i + '">No mapa <span class="pin-mini">' + pin + "</span></button>");
+  if (s.hotel && TRIP.hotel && TRIP.hotel.ll) meta.push('<button type="button" class="map map-jump" data-stop="hotel">No mapa <span class="pin-mini hotel">H</span></button>');
   if (s.map) meta.push('<a class="map" href="' + mapUrl(s.map) + '" target="_blank" rel="noopener">Google Maps ↗</a>');
   const shot = carouselHtml(s.photos, "Fotos: " + s.name);
   const inner = (shot ? '<div class="shot">' + shot + "</div>" : "") +
@@ -349,7 +360,7 @@ function renderAntes() {
     '<div class="leg"><span class="lbl">Chegada</span><span class="code">AEP</span><span class="tm">dom 06/12 · 12:40</span></div>' +
     '<div class="flight" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></div>' +
     '<div class="leg r"><span class="lbl">Volta</span><span class="code">EZE</span><span class="tm">sáb 12/12 · 14:00</span></div></div>' +
-    '<div class="pass-foot"><div><span>Hotel</span><b>Pleno Madero</b></div><div><span>Check-in</span><b>15h</b></div>' +
+    '<div class="pass-foot"><div><span>Hotel · ' + esc(TRIP.hotel.aka) + '</span><b>' + esc(TRIP.hotel.name + ", " + TRIP.hotel.address) + "</b></div><div><span>Check-in</span><b>15h</b></div>" +
     "<div><span>Último dia</span><b>Sair às 10h</b></div></div></section>" +
     '<section class="panel reveal" id="app-block"><div class="panel-h"><h3>App no celular</h3></div>' +
     '<p class="note" id="app-state">Instale o roteiro na tela inicial para abrir como app, mesmo sem internet.</p>' +
@@ -474,7 +485,7 @@ $("antes-body").addEventListener("click", (e) => {
 });
 $("day").addEventListener("click", (e) => {
   const jump = e.target.closest(".map-jump");
-  if (jump) { showOnMap(Number(jump.dataset.stop)); return; }
+  if (jump) { showOnMap(jump.dataset.stop === "hotel" ? "hotel" : Number(jump.dataset.stop)); return; }
 });
 document.addEventListener("click", (e) => {                // botão dentro do balão do mapa
   const go = e.target.closest(".pop-go");

@@ -5,12 +5,15 @@
    ll: [latitude, longitude] da parada, usada no mapa do dia. */
 const TRIP = {
   tz: "America/Argentina/Buenos_Aires",
+  // O Pleno Madero é o antigo Own Madero: algumas reservas ainda usam o nome antigo.
+  hotel: { name: "Pleno Madero", aka: "antigo Own Madero", address: "Azopardo 419, Monserrat",
+           ll: [-34.61257, -58.36806], map: "Azopardo 419, Buenos Aires" },
   days: [
     { id: "dia-06", date: "2026-12-06", wd: "Domingo", abbr: "dom", title: "San Telmo", photos: ["dorrego", "mercado", "zanjon"],
       stops: [
         { t: "12:40", name: "Pouso no Aeroparque (AEP)", minor: true,
-          info: "Táxi ou Uber até o Hotel Pleno Madero (~20 min). Check-in só às 15h: deixar as malas na recepção.",
-          map: "Hotel Pleno Madero, Buenos Aires" },
+          info: "Táxi ou Uber até o Hotel Pleno Madero, antigo Own Madero, na Azopardo 419 (~20 min). Check-in só às 15h: deixar as malas na recepção.",
+          map: "Azopardo 419, Buenos Aires" },
         { t: "14:30", name: "Feira e Mercado de San Telmo", photos: ["mercado", "mercado2"], ll: [-34.61905, -58.37251],
           info: "A pé do hotel (~15 min) ou Uber. Feira das 10h às 17h; almoço no Mercado, aberto das 9h às 20h.",
           list: [["El Hornero", "empanadas"], ["Choripanería", "choripan"], ["Saigón", "vietnamita"],
@@ -21,7 +24,7 @@ const TRIP = {
           ll: [-34.61669, -58.37180], price: 121, tags: ["reservar"], map: "El Zanjón de Granados, Defensa 755, Buenos Aires" },
         { t: "17:00", name: "Plaza Dorrego e Paseo de la Historieta", info: "Esculturas dos quadrinhos argentinos pelas calçadas.",
           ll: [-34.62049, -58.37178], map: "Plaza Dorrego, San Telmo, Buenos Aires" },
-        { t: "17:30", name: "Hotel", minor: true },
+        { t: "17:30", name: "Hotel", minor: true, hotel: true },
         { t: "20:30", name: "Jantar na La Brigada", info: "Parrilla em que a carne é cortada com colher.",
           ll: [-34.61844, -58.37274], tags: ["reserva"], map: "La Brigada, Estados Unidos 465, Buenos Aires" }
       ] },
@@ -45,7 +48,7 @@ const TRIP = {
           ll: [-34.60417, -58.39065], map: "Heladería Cadore, Av. Corrientes 1695, Buenos Aires" },
         { t: "17:15", name: "Puente de la Mujer", photos: ["puente", "madero"], info: "Uber até Puerto Madero e caminhada pelos diques.",
           ll: [-34.60802, -58.36513], map: "Puente de la Mujer, Puerto Madero, Buenos Aires" },
-        { t: "18:00", name: "Hotel, descanso e banho", minor: true },
+        { t: "18:00", name: "Hotel, descanso e banho", minor: true, hotel: true },
         { t: "21:00", name: "Jantar em Puerto Madero", tags: ["a definir"] }
       ],
       tip: "Sem o shopping, dá para adiantar o Obelisco para as 15h e chegar mais cedo ao hotel." },
@@ -67,7 +70,7 @@ const TRIP = {
           map: "La Biela, Recoleta, Buenos Aires" },
         { t: "16:00", name: "Av. Santa Fe", photos: ["ateneo"], info: "Galería Bond Street, El Ateneo Grand Splendid e sorvete na Rapanui.",
           ll: [-34.59598, -58.39426], map: "El Ateneo Grand Splendid, Av. Santa Fe 1860, Buenos Aires" },
-        { t: "17:30", name: "Hotel", minor: true },
+        { t: "17:30", name: "Hotel", minor: true, hotel: true },
         { t: "19:20", name: "Teatro Colón", photos: ["colon", "colon2"], ll: [-34.60109, -58.38319], tags: ["ingresso"],
           map: "Teatro Colón, Buenos Aires" },
         { t: "22:00", name: "Pizzería Güerrín", info: "Av. Corrientes 1368, a poucos minutos do teatro.", ll: [-34.60410, -58.38599],
@@ -90,7 +93,7 @@ const TRIP = {
           photos: ["rosedal", "planetario"], ll: [-34.56968, -58.43196], map: "Rosedal de Palermo, Buenos Aires" },
         { t: "17:30", name: "Palermo Soho", info: "Lojinhas, sorvete na Tufic e Plaza Serrano.", photos: ["soho"],
           ll: [-34.58875, -58.43017], map: "Plaza Serrano, Palermo, Buenos Aires" },
-        { t: "18:30", name: "Hotel", minor: true },
+        { t: "18:30", name: "Hotel", minor: true, hotel: true },
         { t: "22:30", name: "Don Julio", info: "Guatemala 4699. Molleja inteira, charcutaria da casa e bife de chorizo ou ojo de bife.",
           ll: [-34.58629, -58.42428], tags: ["reserva"], map: "Don Julio, Guatemala 4699, Buenos Aires" },
         { t: "00:30", name: "Uptown Bar", info: "Arévalo 2030. Às quartas fecha às 2h.", tags: ["se der tempo"],
@@ -114,7 +117,7 @@ const TRIP = {
         { t: "16:15", name: "Táxi para Puerto Madero", minor: true },
         { t: "17:00", name: "Fragata Sarmiento", photos: ["fragata"], info: "Às quintas abre das 13h às 19h. Fecha se chover.",
           ll: [-34.60680, -58.36540], map: "Buque Museo Fragata Presidente Sarmiento, Puerto Madero" },
-        { t: "18:00", name: "Hotel", minor: true },
+        { t: "18:00", name: "Hotel", minor: true, hotel: true },
         { t: "19:30", name: "Jantar na Cabaña Las Lilas", info: "Na beira do dique, a pé do hotel.",
           ll: [-34.60413, -58.36672], tags: ["reserva"], map: "Cabaña Las Lilas, Puerto Madero, Buenos Aires" },
         { t: "21:30", name: "Show de tango no La Ventana", info: "Balcarce 431. Conferir no voucher o horário de chegada.",

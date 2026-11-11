@@ -598,3 +598,12 @@ button.map:hover { text-decoration: none; background: color-mix(in srgb, var(--d
   .stats { margin-inline: 1.4rem; }
 }
 .panel, .pass { scroll-margin-top: 1rem; }
+.pin.hotel, .pin-mini.hotel { background: var(--ink); color: var(--bg); }
+.pin.hotel { border-radius: 8px; transform: none; }
+.pin.hotel > b { transform: none; }
+/* Resumo do dia no celular: coluna do horário mais larga, para "12:40–20:30" caber inteiro */
+.stats { grid-template-columns: minmax(0, .8fr) minmax(0, 1.5fr) minmax(0, .9fr); }
+@media (max-width: 30rem) {
+  .stats > div { padding: .75rem .65rem; }
+  .stats dd { font-size: clamp(.95rem, 4.3vw, 1.15rem); }
+}
